@@ -1,0 +1,6 @@
+/**/node_modules
+/**/assets.json
+npm-debug.log
+/test-*
+/public
+.sass-cache/*
