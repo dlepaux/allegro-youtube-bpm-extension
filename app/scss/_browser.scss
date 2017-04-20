@@ -1,9 +1,11 @@
 /* Variables */
-$main_color: #398649;
+$main_color: white;
 $main_background: lighten($main_color, 20%);
 $button_background: lighten($main_color, 10%);
 $button_neutral_background: #DDD;
-$complementary_color: #AA3939;
+$complementary_color: #2d68a4;
+$chromeExtensionID: 'bncgbealpndkkkfhfjjekolhpkggpfjf';
+
 
 @import 'font.scss';
 
@@ -27,6 +29,7 @@ h3 {
 }
 hr {
     border-width: 0px;
+    padding: .5em;
     border-bottom: 1px solid $button_neutral_background;
 }
 ul {
@@ -61,19 +64,6 @@ $headerHeight: 50px;
 	z-index: 20;
 	display:inline-block;
 	margin-top: 12px;
-}
-/* Header déco */
-.lines {
-	z-index: 10;
-	position:absolute;
-	padding-top: 2px;
-    height: $headerHeight;
-    width: 100%;
-
-	> div {
-		margin-top: 6px;
-		border-bottom: 2px solid rgba(255,255,255, 0.2);
-	}
 }
 
 /* Options */

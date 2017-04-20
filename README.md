@@ -31,6 +31,11 @@ Screenshots
 2. `cd youtube-bpm-extension`
 3. `npm install && npm install -g brunch`
 
+## Todo
+
+Localize extension
+https://developer.chrome.com/webstore/i18n?hl=fr
+
 
 ## <a name="workflow"></a> Workflow
 
