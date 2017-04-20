@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
 
-  "name": "Youtube Beats Per Minute Analyser",
+  "name": "Allegro",
   "description": "Analaze the BPM/Tempo in real-time over all music video on Youtube, datas are stored into your localStorage",
   "version": "0.0.1",
 

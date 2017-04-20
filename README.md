@@ -1,4 +1,18 @@
-# Youtube BPM Extension
+<p align="center">
+  <p align="center">
+    <img src="![](app/assets/icon128.png)" width=128 height=128>
+  </p>
+
+  <p align="center">
+    <img src="![](app/assets/img/allegro-logo.png)" width=283 height=97>
+  </p>
+
+  <p align="center">
+  	Simple and efficiency extension to analyse BPM/Tempo over youtube music videos.
+  </p>
+</p>
+
+<br>
 
 This extension is available on Chrome only for now... It permit to analyse and detect BPM on youtube music video ! Results are stored in the localStorage and showed in every visible title !
 

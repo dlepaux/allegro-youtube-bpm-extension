@@ -1,8 +1,8 @@
 {
-  "name": "youtube-bpm-extension",
+  "name": "allegro-youtube-bpm-extension",
   "version": "0.0.1",
   "private": true,
-  "description": "Chrome Extention - Analyse and show BPM in each detected videos",
+  "description": "Allegro - Analyse and show BPM in each detected videos",
   "repository ": {
     "type": "git",
     "url": "git://github.com/dlepaux/youtube-bpm-chords-key-analyser.git"
