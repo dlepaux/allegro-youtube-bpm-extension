@@ -32,6 +32,9 @@ exports.config =
       index: true
       # Autoprefix CSS3 properties
       autoprefixer: {add:true}
+    assetsmanager:
+      copyTo:
+        '../public/_locales/': ['app/assets/_locales/*']
     fingerprint:
       # Mapping fingerprinted asets
       targets: '*'

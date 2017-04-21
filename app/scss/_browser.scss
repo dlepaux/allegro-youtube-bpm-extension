@@ -4,7 +4,7 @@ $main_background: lighten($main_color, 20%);
 $button_background: lighten($main_color, 10%);
 $button_neutral_background: #DDD;
 $complementary_color: #2d68a4;
-
+$black_logo: #231f20;
 
 @import 'font.scss';
 
@@ -148,7 +148,7 @@ input[type="radio"][name="display_mode"]:checked + label:hover {
 /* Footer */
 .footer {
     margin-top: .5em;
-	background: $main_background;
+	background: $black_logo;
 	font-size: 75%;
 	color: white;
 	padding: .5em 1em;
