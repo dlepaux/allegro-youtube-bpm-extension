@@ -1,13 +1,13 @@
 {
   "name": "allegro-youtube-bpm-extension",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "private": true,
   "description": "Allegro - Analyse and show BPM in each detected videos",
   "repository ": {
     "type": "git",
-    "url": "git://github.com/dlepaux/youtube-bpm-chords-key-analyser.git"
+    "url": "git://github.com/dlepaux/allegro-youtube-bpm-extension.git"
   },
-  "author": "David Lepaux <david@lovelivemusic.fr>",
+  "author": "David Lepaux <d.lepaux@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "j2c": "^1.0.0-4",

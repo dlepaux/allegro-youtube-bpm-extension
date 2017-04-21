@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "Allegro",
+    "description": "The title of the application, displayed in the web store."
+  },
+  "appDesc": {
+    "message": "Analyze the BPM/Tempo in real-time over all music video on Youtube, datas are stored into your localStorage.", 
+    "description":"The description of the application, displayed in the web store."
+  }
+}

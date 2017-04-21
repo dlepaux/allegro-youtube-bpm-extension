@@ -1,9 +1,10 @@
 {
   "manifest_version": 2,
 
-  "name": "Allegro",
-  "description": "Analaze the BPM/Tempo in real-time over all music video on Youtube, datas are stored into your localStorage",
-  "version": "0.0.2",
+  "name": "__MSG_appName__",
+  "description": "__MSG_appDesc__",
+  "version": "0.0.3",
+  "default_locale": "en",
 
   "icons": {
     "16": "icon16.png",

@@ -8,7 +8,7 @@
 main_color = '#398649'
 youtube_red = '#e52d27'
 
-public_path = 'chrome-extension://bncgbealpndkkkfhfjjekolhpkggpfjf'
+public_path = 'chrome-extension://__MSG_@@extension_id__'
 
 module.exports = 
   css: {
