@@ -180,7 +180,7 @@ class YoutubeBPM
             HTMLVideoElement.onplay = (e) ->
               audioContext?.resume()
         # When video leave, detectBpm
-        HTMLVideoElement.onabort = (e) ->
+        HTMLVideoElement.onended = (e) ->
           UI.isRecording = false
           superBuffer = that._getSuperBuffer(increment, arrayBuffer)
 

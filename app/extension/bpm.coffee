@@ -161,10 +161,10 @@ identifyIntervals = (peaks) ->
       #* Try and find a matching interval and increase it's count
       ###
 
-      foundInterval = intervals.some intervalCount ->
+      foundInterval = intervals.some((intervalCount) ->
         if intervalCount.interval == interval
           return intervalCount.count += 1
-
+      )
       ###
       #* Add the interval to the collection if it's unique
       ###
@@ -196,7 +196,7 @@ groupByTempo = (sampleRate) ->
   return (intervalCounts) ->
     tempoCounts = []
 
-    intervalCounts.forEach intervalCount ->
+    intervalCounts.forEach (intervalCount) ->
       if intervalCount.interval != 0
         ###
         #* Convert an interval to tempo
@@ -223,7 +223,7 @@ groupByTempo = (sampleRate) ->
         #* See if another interval resolved to the same tempo
         ###
 
-        foundTempo = tempoCounts.some tempoCount ->
+        foundTempo = tempoCounts.some (tempoCount) ->
           if tempoCount.tempo == theoreticalTempo
             return tempoCount.count += intervalCount.count
 
