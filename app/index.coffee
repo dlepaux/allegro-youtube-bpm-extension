@@ -37,9 +37,17 @@ if ! window.cancelAnimationFrame
 class YoutubeBPM
 
   constructor: (@config) ->
+    that = this
+
     # Defaults options
+    chrome.storage.onChanged.addListener (changes, namespace) ->
+      for key of changes
+        if key == 'options'
+          that.active = changes[key].newValue.active
+
+
     @options =
-      autoDetect: false
+      active: true
     
     # Init variable
     @source
@@ -94,7 +102,7 @@ class YoutubeBPM
       if superBuffer == null
         superBuffer = arrayBuffer[i]
       else
-        superBuffer = utils.concatenateAudioBuffers superBuffer, arrayBuffer[i]
+        superBuffer = utils.concatenateAudioBuffers audioContext, superBuffer, arrayBuffer[i]
       i++
     return superBuffer
 
@@ -115,9 +123,9 @@ class YoutubeBPM
         else
           element.appendChild(document.createTextNode(sheet))
         return element
-      toggleAutoDetect: (e) ->
+      toggleactive: (e) ->
         e.stopPropagation()
-        that.options.autoDetect = ! that.options.autoDetect
+        that.options.active = ! that.options.active
       detectBPM: (e = null) ->
         e?.stopPropagation()
         UI.isRecording = true
@@ -137,7 +145,7 @@ class YoutubeBPM
             if audioBuffer == null
               audioBuffer = e.inputBuffer
             else
-              audioBuffer = utils.concatenateAudioBuffers audioBuffer, e.inputBuffer
+              audioBuffer = utils.concatenateAudioBuffers audioContext, audioBuffer, e.inputBuffer
             # Show PC
             countedDuration = countedDuration + e.inputBuffer.duration
             UI.percentageRecording = 100 * countedDuration / duration
@@ -157,11 +165,11 @@ class YoutubeBPM
         connect(HTMLVideoElement)
 
         # update
-        #update = () ->
-        #  #console.log 'update'
-        #  requestAnimationFrame(update)
-        #  m.redraw()
-        #update()
+        update = () ->
+          console.log 'update'
+          requestAnimationFrame(update)
+          m.redraw()
+        update()
 
         params = that._getQueryParams(document.location.search)
 
@@ -186,7 +194,7 @@ class YoutubeBPM
       # UI
       currentBPM: 0
       oncreate: (vnode) ->
-        if that.options.autoDetect
+        if that.options.active
           UI.detectBPM()
           UI.isRecording = true
 
@@ -207,10 +215,18 @@ class YoutubeBPM
           m 'style', oncreate: (vnode) ->
             UI.stylize vnode.dom, sheet
           m 'div', {class: j2c.names['line-height32']}, [
-            m 'span', {class: j2c.names['icon-ios-speedometer']}
-            m 'div', {class: j2c.names['inline-block']}, [
-              m 'input#cb2[type="checkbox"]', {class: j2c.names['tgl'] + ' ' + j2c.names['tgl-ios']}
-              m 'label[for="cb2"]', {class: j2c.names['tgl-btn']}
+            #m 'span', {class: j2c.names['icon-ios-speedometer']}
+            m 'div', {class: j2c.names.bars}, [
+              (() ->
+                that.analyser.getByteFrequencyData(that.frequencyData)
+                bars = []
+                i = 0
+                while i < that.analyser.frequencyBinCount
+                  bars.push(m('div', {class: j2c.names.bar}, m('div', {class: j2c.names.bar_inner, style: 'height: ' + (that.frequencyData[i] / 10) + 'px;'})))
+                  i++
+                return bars
+              )()
+              m 'div.clearfix'
             ]
           ]
         ]
@@ -306,7 +322,8 @@ class YoutubeBPM
       # Analyser
       # Create analyser
       @analyser = audioContext.createAnalyser()
-      @analyser.fftSize = 128 # ce parametre réduit l'échantillonage du son
+      @analyser.fftSize = 32 # ce parametre réduit l'échantillonage du son
+      #@analyser.maxDecibels = -10 # règle la valeur maximum des frequences
       @analyser.connect(audioContext.destination)
       @frequencyData = new Uint8Array(@analyser.frequencyBinCount)
       # Source connects

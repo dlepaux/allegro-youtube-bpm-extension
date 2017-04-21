@@ -1,14 +1,14 @@
 "use strict";
 
 
-
-
+# 02bf51 vert clair
+# 383eb5 violet 
 
 
 main_color = '#398649'
 youtube_red = '#e52d27'
 
-public_path = 'chrome-extension://__MSG_@@extension_id__'
+public_path = 'chrome-extension://jainmjkfdkbgdheomnhgeijfpamdbdhj'
 
 module.exports = 
   css: {
@@ -61,66 +61,28 @@ module.exports =
     ".mithril-root":
       float: 'left'
 
-    ".tgl":
-      display: "none"
-      # add default box-sizing for this scope
-      "&, &:after, &:before, & *, & *:after, & *:before, & + .tgl-btn":
-        "box-sizing": "border-box"
-        "&::selection":
-          background: "none"
-      
-      "+ .tgl-btn":
-        outline: 0
-        display: "block"
-        width: "3em"
-        height: "1em"
-        position: "relative"
-        cursor: "pointer"
-        "user-select": "none"
-        "&:after, &:before":
-          position: "relative"
-          display: "block"
-          content: '""'
-          width: '21px'
-          height: '21px'
     
-        "&:after":
-          left: 0
-        
-        "&:before":
-          display: 'none'
-      
-      "&:checked + .tgl-btn:after":
-        left: '50%'
-        'margin-left': '-2px'
-
-    # Toggle Switch IOS
-    ".tgl-ios + .tgl-btn":
-        "top": "12px"
-        background: "#fbfbfb"
-        'border-radius': "2em"
-        padding: "0px"
-        transition: "all .4s ease"
-        #border: "1px solid #e8eae9"
-        "&:after":
-          'top': '-5px'
-          'border-radius': "2em"
-          background: "#fbfbfb"
-          transition: "left .3s cubic-bezier(0.175, 0.885, 0.320, 1.275), padding .3s ease, margin .3s ease"
-          'box-shadow': "0 0 0 1px rgba(0,0,0,.1), 0 4px 0 rgba(0,0,0,.08)"
-        "&:hover:after":
-          "will-change": "padding"
-        "&:active":
-          "box-shadow":" inset 0 0 0 2em #e8eae9"
-          "&:after":
-            "padding-right": "1em"
-      "&:checked + .tgl-btn":
-        background: youtube_red
-        "&:active":
-          "box-shadow": 'none'
-          "&:after":
-            "margin-left": '-1em'
-
+    ".bars":
+      'margin-top':'5px'
+      display: 'inline-block'
+      width: '32px'
+      position:'relative'
+    ".bar":
+      float: 'left'
+      height: '25px'
+      width: '2px'
+      position:'relative'
+    ".bar_inner":
+      #/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#02bf51+0,383eb5+100 */
+      position:'absolute'
+      bottom:0
+      left:0;
+      width: '2px'
+      background: "rgb(2,191,81)"
+      background: "-moz-linear-gradient(top, rgba(2,191,81,1) 0%, rgba(56,62,181,1) 100%)"
+      background: "-webkit-linear-gradient(top, rgba(2,191,81,1) 0%,rgba(56,62,181,1) 100%)"
+      background: "linear-gradient(to bottom, rgba(2,191,81,1) 0%,rgba(56,62,181,1) 100%)"
+      filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#02bf51', endColorstr='#383eb5',GradientType=0 )"
 
 
 

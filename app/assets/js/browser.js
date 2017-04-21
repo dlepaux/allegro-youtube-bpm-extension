@@ -17,7 +17,7 @@ var setOptions = function (options) {
 }
 
 var defaultConfig = {
-	display_mode: 'inline'
+	active: true
 }
 
 var onload = function (e) {
@@ -29,14 +29,15 @@ var onload = function (e) {
 		if (options == null) {
 			options = defaultConfig;
 		}
-		var radio = document.querySelector('input[type="radio"][name="display_mode"][value="' + options.display_mode + '"]');
+		var radio = document.querySelector('input[type="checkbox"][name="active"]');
 		radio.checked = true;
 
 		// Listener
-		var radios = document.querySelectorAll('input[name="display_mode"]');
+		var radios = document.querySelectorAll('input[name="active"]');
 		for(var i = 0, max = radios.length; i < max; i++) {
 			radios[i].onchange = function (e) {
-				options.display_mode = e.target.getAttribute('value');
+				console.log(e.currentTarget.checked);
+				options.active = e.currentTarget.checked;
 				setOptions(options);
 			}
 		}

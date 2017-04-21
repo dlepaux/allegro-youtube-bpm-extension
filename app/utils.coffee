@@ -1,7 +1,7 @@
 'use strict' 
 
 # Concat Two AudioBuffer togheter
-concatenateAudioBuffers: (buffer1, buffer2) ->
+concatenateAudioBuffers = (audioContext, buffer1, buffer2) ->
   if ! buffer1 || ! buffer2
     console.log "no buffers!"
     return null
