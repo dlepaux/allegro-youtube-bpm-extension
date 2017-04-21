@@ -1,6 +1,6 @@
 {
   "name": "allegro-youtube-bpm-extension",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "private": true,
   "description": "Allegro - Analyse and show BPM in each detected videos",
   "repository ": {
