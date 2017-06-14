@@ -28,8 +28,6 @@
     "brunch": "^2.0.0",
     "clean-css-brunch": ">= 1.0 < 1.8",
     "coffee-script": "~1.9.0",
-    "coffee-script-brunch": "^1.8.3",
-    "coffeeify": "^2.0.1",
     "css-brunch": ">= 1.0 < 1.8",
     "cssnano-brunch": ">= 1.1.8",
     "fingerprint-brunch": "1.2.7",

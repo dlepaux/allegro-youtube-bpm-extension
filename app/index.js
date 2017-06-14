@@ -43,7 +43,7 @@ if (!window.cancelAnimationFrame)
 
 class YoutubeBPM {
 
-  constructor(this.config) {
+  constructor(config) {
     var that = this;
 
     // Defaults options
@@ -54,6 +54,8 @@ class YoutubeBPM {
         }
       }
     });
+
+    this.sheet = j2c.sheet(style.css);
 
 
     this.options = {
@@ -69,21 +71,22 @@ class YoutubeBPM {
     this.spfEventInitialized = false
 
     // Merge config
-    var cfg = this.config || {};
+    var cfg = config || {};
     this.options = Object.assign(this.options, cfg);
   }
 
 
 
   // Get query params
-  _getQueryParamsfunction (qs) {
-    qs = qs.split('+').join(' ')
-    params = {}
-    tokens
-    re = /[?&]?([^=]+)=([^&]*)/g
-    while tokens = re.exec(qs)
-        params[decodeURIComponent tokens[1] ] = decodeURIComponent tokens[2]
-    return params
+  _getQueryParams (qs) {
+    qs = qs.split('+').join(' ');
+    var params = {};
+    var tokens;
+    var re = /[?&]?([^=]+)=([^&]*)/g;
+    while (tokens = re.exec(qs)) {
+      params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2]);
+    }
+    return params;
   }
 
   _getDataStored (callback) {
@@ -102,7 +105,7 @@ class YoutubeBPM {
       console.log(data);
       // Check if already exist
       if (! data.hasOwnProperty(id)) {
-        data[id] = bpm
+        data[id] = bpm;
         chrome.storage.sync.set({
           detectedVideos: data
         }, function () {
@@ -111,7 +114,7 @@ class YoutubeBPM {
       } else {
         console.log('This BPM has been already detected');
       }
-    }
+    });
   }
 
   // Get Buffer from arrayBuffer with current increment
@@ -132,26 +135,26 @@ class YoutubeBPM {
 
   // Mithril Component
   // Styles
-  this.sheet = j2c.sheet(style.css);
+  
   _extentionBar (HTMLVideoElement) {
     that = this;
     UI = {
       isRecording: false,
       percentageRecording: 0,
       // Mount style to root 
-      stylize: function (element, sheet) {
+      stylize: function (element) {
         element.type = 'text/css';
         if (element.styleSheet) {
-          element.styleSheet.cssText = sheet;
+          element.styleSheet.cssText = that.sheet;
         } else {
-          element.appendChild(document.createTextNode(sheet));
+          element.appendChild(document.createTextNode(that.sheet));
         }
         return element;
       },
       toggleactive: function (e)  {
         e.stopPropagation();
         that.options.active = ! that.options.active;
-      }
+      },
       detectBPM: function (e = null) {
         e && e.stopPropagation();
         UI.isRecording = true;
@@ -183,14 +186,14 @@ class YoutubeBPM {
             //m.redraw()
             // Store AudioBuffer in array (memory issue)
             if (audioBuffer.duration > 10) {
-              console.log 'e.inputBuffer'
-              console.log e.inputBuffer
-              arrayBuffer.push(audioBuffer)
-              increment++
+              console.log('e.inputBuffer');
+              console.log(e.inputBuffer);
+              arrayBuffer.push(audioBuffer);
+              increment++;
               //UI.currentBPM = getBPM(that._getSuperBuffer(increment, arrayBuffer))
               //console.log 'm.redraw()'
               //m.redraw()
-              audioBuffer = null
+              audioBuffer = null;
             }
             //console.log increment
           }
@@ -212,9 +215,9 @@ class YoutubeBPM {
         // Freeze Suspend audioContext on pause
         HTMLVideoElement.onpause = function (e) {
           if (UI.isRecording) {
-            audioContext?.suspend();
+            audioContext && audioContext.suspend();
             HTMLVideoElement.onplay = function (e) {
-              audioContext?.resume();
+              audioContext && audioContext.resume();
             }
           }
         }
@@ -222,7 +225,7 @@ class YoutubeBPM {
         HTMLVideoElement.onended = function (e) {
           UI.isRecording = false;
           superBuffer = that._getSuperBuffer(increment, arrayBuffer);
-          try () {
+          try {
             var bpm = getBPM(superBuffer);
             that._storeResultInStorage(params.v, bpm);
             console.log('BPM is : ' + bpm);
@@ -241,7 +244,7 @@ class YoutubeBPM {
         }
       },
       isChecked: function (bool) {
-        if (! bool or bool == null or typeof(bool) == 'undefined') {
+        if (! bool || bool == null || typeof(bool) == 'undefined') {
           return '';
         } else {
           return '[checked="checked"]';
@@ -255,9 +258,9 @@ class YoutubeBPM {
       },
       view: function (vnode) {
         return [
-          m('style', oncreate: function (vnode) {
-            UI.stylize(vnode.dom, sheet);
-          }),
+          m('style', {oncreate: function (vnode) {
+            UI.stylize(vnode.dom);
+          }}),
           m('div', {class: j2c.names['line-height32']}, [
             //m 'span', {class: j2c.names['icon-ios-speedometer']}
             m('div', {class: j2c.names.bars}, [
@@ -294,7 +297,7 @@ class YoutubeBPM {
       parent.insertBefore(div, parent.firstChild);
     }
     // Mount mithril
-    m.mount(document.getElementById('mithril-root'), @_extentionBar(HTMLVideoElement));
+    m.mount(document.getElementById('mithril-root'), this._extentionBar(HTMLVideoElement));
   }
 
   // Listen Video, renderUI
@@ -305,7 +308,7 @@ class YoutubeBPM {
     // Events exluded
     // progress timeupdate
     // Render UI
-    @_renderUIon(HTMLVideoElement)
+    this._renderUIon(HTMLVideoElement)
   }
 
 
@@ -339,21 +342,22 @@ class YoutubeBPM {
 
         Object.keys(data).forEach( function (key) {
 
-          querySelectors = [
+          var querySelectors = [
             'a[href*="/watch?v=' + key + '"] span.title',
             'a[href*="/watch?v=' + key + '"].yt-ui-ellipsis',
             'a[href*="/watch?v=' + key + '"].pl-video-title-link',
             'a[href*="/watch?v=' + key + '"].playlist-video h4.yt-ui-ellipsis'
           ];
-          for (var selector in querySelectors) {
-            var video = document.querySelector(selector)
+          for (var i in querySelectors) {
+            var selector = querySelectors[i];
+            var video = document.querySelector(selector);
             if (video != null) {
               video.innerHTML = that._bpmTitleFormat(data[key], video.innerHTML, clear);
             }
           }
         });
       }
-    }
+    });
   }
 
 
@@ -405,10 +409,10 @@ class YoutubeBPM {
       this.source.connect(this.analyser);
       this.source.connect(audioContext.destination);
       // RenderUI
-      @_watchVideo(youtubeVideo);
+      this._watchVideo(youtubeVideo);
     }
     // Found and add each detected BPM on know video
-    @_addBPMinTitles();
+    this._addBPMinTitles();
 
     // Youtube SPF Events
     // http://youtube.github.io/spfjs/documentation/events/
@@ -429,5 +433,6 @@ class YoutubeBPM {
 
 // Let's dooo iiiiit
 //chrome.storage.local.clear()
-youtubeBpmAnalyser = new YoutubeBPM();
+console.log('whoop whoop');
+var youtubeBpmAnalyser = new YoutubeBPM();
 youtubeBpmAnalyser.init();

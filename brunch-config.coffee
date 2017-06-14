@@ -1,5 +1,3 @@
-coffeeify = require 'coffeeify'
-
 exports.config =
   paths:
     public: './public'
@@ -47,16 +45,13 @@ exports.config =
       autoClearOldFiles: false
     browserify:
       extensions: """
-      js coffee
+      js
       """
       bundles:
         'js/index.js':
-          entry: 'app/index.coffee'
+          entry: 'app/index.js'
           matcher: /^app/
-          onBrowserifyLoad: (bundler) ->
-            bundler.transform coffeeify,
-              bare: false
-              header: true
+          onBrowserifyLoad: (bundler) -> console.log 'onBrowserifyLoad'
           onBeforeBundle: (bundler) -> console.log 'onBeforeBundle'
           onAfterBundle: (error, bundleContents) -> console.log 'onAfterBundle'
           instanceOptions: {}

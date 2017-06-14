@@ -89,14 +89,14 @@ module.exports = {
       ///* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#02bf51+0,383eb5+100 */
       position:'absolute',
       bottom:0,
-      left:0;,
+      left:0,
       width: '2px',
       background: "rgb(2,191,81)",
       background: "-moz-linear-gradient(top, rgba(2,191,81,1) 0%, rgba(56,62,181,1) 100%)",
       background: "-webkit-linear-gradient(top, rgba(2,191,81,1) 0%,rgba(56,62,181,1) 100%)",
       background: "linear-gradient(to bottom, rgba(2,191,81,1) 0%,rgba(56,62,181,1) 100%)",
       filter: "progid:DXImageTransform.Microsoft.gradient( startColorstr='#02bf51', endColorstr='#383eb5',GradientType=0 )"
-    }
+    },
 
 
 
@@ -132,7 +132,7 @@ module.exports = {
       right: 0,
       bottom: 0,
       left: 0,
-      "z-index": 1
+      "z-index": 1,
       "&, & *": {
         "-webkit-box-sizing": "border-box",
         "-moz-box-sizing": "border-box",
