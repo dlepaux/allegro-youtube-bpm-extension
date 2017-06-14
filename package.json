@@ -7,6 +7,9 @@
     "type": "git",
     "url": "git://github.com/dlepaux/allegro-youtube-bpm-extension.git"
   },
+  "scripts": {
+    "test": "mocha --require babel-polyfill --compilers js:babel-register"
+  },
   "author": "David Lepaux <d.lepaux@gmail.com>",
   "license": "MIT",
   "dependencies": {
@@ -15,6 +18,9 @@
   },
   "devDependencies": {
     "assetsmanager-brunch": "~1.8.1",
+    "babel-polyfill": "^6.23.0",
+    "babel-preset-env": "^1.4.0",
+    "babel-register": "^6.24.1",
     "brfs": "^1.2.0",
     "browserify": "^13.1.1",
     "browserify-brunch": "^1.7.3",

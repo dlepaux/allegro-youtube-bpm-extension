@@ -244,4 +244,4 @@ function groupByTempo(sampleRate) {
   }
 }
 
-export default 
+module.exports = detect;
