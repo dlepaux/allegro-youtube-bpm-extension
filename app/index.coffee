@@ -54,6 +54,7 @@ class YoutubeBPM
     @scriptNode
     @analyser
     @frequencyData
+    @frequencyFloatData
     @spfEventInitialized = false
 
     # Merge config
@@ -136,7 +137,7 @@ class YoutubeBPM
         # OnAudioProcess
         arrayBuffer = []
         increment = 0
-        countedDuration = 0
+        #countedDuration = 0
         
         connect = (HTMLVideoElement) ->
           audioBuffer = null
@@ -147,14 +148,16 @@ class YoutubeBPM
             else
               audioBuffer = utils.concatenateAudioBuffers audioContext, audioBuffer, e.inputBuffer
             # Show PC
-            countedDuration = countedDuration + e.inputBuffer.duration
-            UI.percentageRecording = 100 * countedDuration / duration
+            #countedDuration = countedDuration + e.inputBuffer.duration
+            #UI.percentageRecording = 100 * countedDuration / duration
 
 
             # Redraw
             #m.redraw()
             # Store AudioBuffer in array (memory issue)
             if audioBuffer.duration > 10
+              console.log 'e.inputBuffer'
+              console.log e.inputBuffer
               arrayBuffer.push(audioBuffer)
               increment++
               #UI.currentBPM = getBPM(that._getSuperBuffer(increment, arrayBuffer))
@@ -166,9 +169,10 @@ class YoutubeBPM
 
         # update
         update = () ->
-          console.log 'update'
-          requestAnimationFrame(update)
-          m.redraw()
+          #console.log 'update'
+          if UI.isRecording
+            requestAnimationFrame(update)
+            m.redraw()
         update()
 
         params = that._getQueryParams(document.location.search)
@@ -219,6 +223,9 @@ class YoutubeBPM
             m 'div', {class: j2c.names.bars}, [
               (() ->
                 that.analyser.getByteFrequencyData(that.frequencyData)
+                that.analyser.getFloatFrequencyData(that.frequencyFloatData)
+                console.log that.frequencyData
+                console.log that.frequencyFloatData
                 bars = []
                 i = 0
                 while i < that.analyser.frequencyBinCount
@@ -322,10 +329,11 @@ class YoutubeBPM
       # Analyser
       # Create analyser
       @analyser = audioContext.createAnalyser()
-      @analyser.fftSize = 32 # ce parametre réduit l'échantillonage du son
+      @analyser.fftSize = 4096 # ce parametre réduit l'échantillonage du son
       #@analyser.maxDecibels = -10 # règle la valeur maximum des frequences
       @analyser.connect(audioContext.destination)
       @frequencyData = new Uint8Array(@analyser.frequencyBinCount)
+      @frequencyFloatData = new Float32Array(@analyser.frequencyBinCount)
       # Source connects
       @source.connect @scriptNode
       @source.connect @analyser
