@@ -34,7 +34,7 @@ class Recorder {
     this.source.connect(this.scriptNode);
     this.source.connect(this.audioContext.destination);
     // Buffer
-    this.increment = null;
+    this.increment = 0;
     this.audioBuffer = null;
     this.superBuffer = null;
     this.arrayBuffer = [];
@@ -54,8 +54,6 @@ class Recorder {
 
   listenAudioProcess () {
     console.log('listenAudioProcess');
-    this.audioBuffer = null;
-    this.increment = 0;
     var that = this;
     this.scriptNode.onaudioprocess = function (e) {
       console.log('onaudioprocess running !');
@@ -110,6 +108,12 @@ class Recorder {
           }
         }
 
+        if (that.options.element.playing || ! that.options.element.paused) {
+          console.log('video auto played');
+          that.listenAudioProcess();
+        } else {
+          console.log('video not auto played');
+        }
       }
     });
 

@@ -26,29 +26,37 @@ global.allegro.env = document.location.href.indexOf('youtube.com') == -1 ? 'deve
 storage.getDataStored((data) => {
   var display = new Display(data);
   display.addBPMinTitles();
+  global.allegro.display = display;
+
+  // Try to catch a HTMLElement
+  var HTMLElement = global.allegro.env == 'development' ? document.querySelector('audio') : document.querySelector('video');
+
+  // Recorder
+  var recorder = null;
+  if (HTMLElement) {
+    // Set recorder listener
+    recorder = new Recorder({element: HTMLElement});
+    recorder.listen();
+  } else {
+    console.log('No audio/video node found in this page !');
+  }
+
+  // Youtube Special Listener
+  document.addEventListener("spfrequest", function () {
+    recorder.clear();
+    global.allegro.audioContext.suspend();
+    console.log('spf request');
+  }, false);
+  document.addEventListener("spfdone", function () {
+    global.allegro.audioContext.resume();
+    storage.getDataStored((data) => {
+      global.allegro.display.update(data);
+    });
+    console.log('spf done');
+    //that.init();
+  }, false);
 });
 
-// Try to catch a HTMLElement
-var HTMLElement = global.allegro.env == 'development' ? document.querySelector('audio') : document.querySelector('video');
-
-// Recorder
-var recorder = null;
-if (HTMLElement) {
-  // Set recorder listener
-  recorder = new Recorder({element: HTMLElement});
-  recorder.listen();
-} else {
-  console.log('No audio/video node found in this page !');
-}
-
-// Youtube Special Listener
-document.addEventListener("spfrequest", function () {
-  console.log('spf request');
-}, false);
-document.addEventListener("spfdone", function () {
-  console.log('spf done');
-  //that.init();
-}, false);
 
 
 ////////////////////////

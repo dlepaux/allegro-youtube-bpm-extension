@@ -19,6 +19,7 @@ storageCustom.storeResultInStorage = (id, bpm) => {
     storageCustom.set({
       detectedVideos: data
     }, function () {
+      global.allegro.display.update(data);
       console.log('Sync succeed !');
     });
   }

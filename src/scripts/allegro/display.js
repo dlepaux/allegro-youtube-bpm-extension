@@ -28,7 +28,7 @@ class Display {
       }
     } else {
       if (! title.match(/\<span\ class\=.*\<\/span\>\ \-\ /g)) {
-        return '<span class="' + global.allegro.j2c.names['primary-color'] + '">[<span class="' + global.allegro.j2c.names['icon-circle'] + '"></span>' + bpm + '<span class="' + global.allegro.j2c.names['text-expose'] + '">BPM</span> ]' + '</span> - ' + title;
+        return '<span class="' + global.allegro.j2c.names['primary-color'] + '">[<span class="' + global.allegro.j2c.names['icon-circle'] + '"></span>' + bpm + '<span class="' + global.allegro.j2c.names['text-expose'] + '">BPM</span>]' + '</span> - ' + title;
       }
     }
     return title;
@@ -38,6 +38,7 @@ class Display {
   // Public mehtod
   // Find and add all video title with [XXX BPM] <title>
   addBPMinTitles (clear = false) {
+    console.log('addBPMinTitles !');
     if (global.allegro.env != 'production') console.log('start addBPM');
     var that = this;
     // If data is not empty
@@ -60,12 +61,18 @@ class Display {
           var selector = querySelectors[i];
           var video = document.querySelector(selector);
           if (video != null) {
-            video.innerHTML = that._bpmTitleFormat(this.data[key], video.innerHTML, clear);
+            video.innerHTML = that._bpmTitleFormat(that.data[key], video.innerHTML, clear);
           }
         }
       });
     }
     if (global.allegro.env != 'production') console.log('end addBPM');
+  }
+
+  update (data) {
+    console.log('update title !');
+    this.data = data;
+    this.addBPMinTitles();
   }
 }
 
