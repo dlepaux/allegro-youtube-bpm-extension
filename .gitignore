@@ -1,6 +1,7 @@
-/**/node_modules
-/**/assets.json
-npm-debug.log
-/test-*
-/public
-.sass-cache/*
+node_modules
+temp
+.tmp
+dist
+.sass-cache
+.DS_Store
+build
