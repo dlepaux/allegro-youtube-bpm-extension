@@ -1,16 +1,53 @@
 @import "modules/reset";
 @import "modules/variables";
 @import "modules/layout";
+@import "modules/utilities";
+@import "modules/switch";
 
 body, html {
   padding: 0;
   margin: 0;
+  height: 100%;
+  min-width: 250px;
+
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#03cb58+0,3742b4+100 */
+  background: rgb(3,203,88); /* Old browsers */
+  background: -moz-linear-gradient(-45deg, rgba(3,203,88,1) 0%, rgba(55,66,180,1) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-45deg, rgba(3,203,88,1) 0%,rgba(55,66,180,1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(135deg, rgba(3,203,88,1) 0%,rgba(55,66,180,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#03cb58', endColorstr='#3742b4',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
 }
 
-#app {
-  padding: 20px 20px;
-  background: $white;
+// Header
+header {
+  position: relative;
+  height: 30px;
 }
+
+.popup--icon {
+  position: absolute;
+  left: 50%;
+  margin-left: -19px;
+  margin-top: 11px;
+}
+
+// Content
+.popup--content {
+  background: rgba(0,0,0,0.5);
+  min-height: 100px;
+}
+
+
+
+
+
+
+
+
+
+
+
+
 
 footer {
   color: $text-secondary;
