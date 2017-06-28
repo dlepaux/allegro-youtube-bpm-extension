@@ -1,7 +1,7 @@
 'use strict';
 
 import storage from "./../utils/storage";
-import utils from "./../utils/buffer";
+import buffer from "./../utils/buffer";
 import BPM from "./bpm";
 import URL from "./url";
 
@@ -23,6 +23,19 @@ class Recorder {
     this.audioContext = global.allegro.audioContext;
     // Source
     this.source = this.audioContext.createMediaElementSource(this.options.element);
+    // Custom Event
+    /*if (window.CustomEvent) {
+      var event = new CustomEvent("newMessage", {
+        detail: {
+          message: msg,
+          time: new Date(),
+        },
+        bubbles: true,
+        cancelable: true
+      });
+
+      this.options.element.dispatchEvent(event);
+    }*/
   }
 
   connect () {
@@ -61,7 +74,7 @@ class Recorder {
       if (that.audioBuffer == null) {
         that.audioBuffer = e.inputBuffer;
       } else {
-        that.audioBuffer = utils.concatenateAudioBuffers(that.audioBuffer, e.inputBuffer);
+        that.audioBuffer = buffer.concatenateAudioBuffers(that.audioBuffer, e.inputBuffer);
       }
       if (that.audioBuffer.duration > 10) {
         that.arrayBuffer.push(that.audioBuffer);
@@ -122,7 +135,7 @@ class Recorder {
     this.options.element.onended = function (e) {
       console.log('onended fired');
 
-      var superBuffer = utils.getSuperBuffer(that.increment, that.arrayBuffer);
+      var superBuffer = buffer.getSuperBuffer(that.increment, that.arrayBuffer);
       if (that.increment == 0) {
         console.log('increment equal zero');
         superBuffer = that.audioBuffer;

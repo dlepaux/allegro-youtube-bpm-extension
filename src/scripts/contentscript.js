@@ -9,7 +9,7 @@ import URL from "./allegro/url";
 
 // Init Project Config in Global
 global.allegro = {
-  env: 'unknow',
+  env: document.location.href.indexOf('youtube.com') == -1 ? 'development' : 'production',
   // Init j2c instance
   j2c: j2c(),
   // Init AudioContext
@@ -18,9 +18,6 @@ global.allegro = {
 // Get and init style
 global.allegro.sheet = global.allegro.j2c.sheet(style.css);
 
-// Detect/Set Environment
-global.allegro.env = document.location.href.indexOf('youtube.com') == -1 ? 'development' : 'production';
-//console.log('env : ' + global.allegro.env);
 
 // Display recorded sound
 storage.getDataStored((data) => {

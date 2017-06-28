@@ -4,54 +4,43 @@
   <meta charset="utf-8">
   <link href="styles/options.css" rel="stylesheet">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>Options & Settings</title>
+  <title>Options & Paramètres</title>
 </head>
 <body class="wrap">
   <div class="grid">
     <div class="unit whole center-on-mobiles">
       <div class="heading">
         <h1>Allegro Extension</h1>
-        <p class="lead">Lorem ipsum dolor iset</p>
+        <p class="lead">Options & Paramètres</p>
       </div>
     </div>
   </div>
 
   <section class="content">
     <div class="grid">
-      <div class="unit whole center-on-mobiles">
+      <div class="unit whole">
         <div class="option">
-          <label><input class="js-checkbox white" type="checkbox"> Recorded & Analyse auto onplay</label>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="content">
-    <div class="grid">
-      <div class="unit whole center-on-mobiles">
-        <div class="option">
-          <h5>Popup color</h5>
-          <div class="radio-group">
-            <label><input class="js-radio white" type="radio" name="radio" value="white">White</label>
-            <label><input class="js-radio beige" type="radio" name="radio" value="beige">Beige</label>
-            <label><input class="js-radio lavender" type="radio" name="radio" value="lavender">Lavender</label>
+          <label><input class="js-checkbox-onplay white" type="checkbox"> Analyse automatique</label>
+          <p class="text-muted">Analyse automatiquement toutes les pistes joués sur le navigateur</p>
+          <div class="option">
+            <label>Temps minimum du média <span class="text-muted">(en minutes)</span></label>
+            <div class="radio-group inline">
+              <label for="mintime-5"><input id="mintime-5" class="js-radio-mintime" type="radio" name="mintime" value="5">5</label>
+              <label for="mintime-8"><input id="mintime-8" class="js-radio-mintime" type="radio" name="mintime" value="8">8</label>
+              <label for="mintime-13"><input id="mintime-13" class="js-radio-mintime" type="radio" name="mintime" value="13">13</label>
+              <label for="mintime-21"><input id="mintime-21" class="js-radio-mintime" type="radio" name="mintime" value="21">21</label>
+            </div>
           </div>
         </div>
-
-        <div class="option">
-          <em class="text-muted">...display your extensions' options here...</em>
-        </div>
-
       </div>
     </div>
   </section>
-
 
   <footer class="main-footer">
     <div class="grid">
       <div class="unit whole center-on-mobiles">
         <p class="text-center text-muted">
-          &copy; Allegro
+          &copy; Allegro Extension
         </p>
       </div>
     </div>

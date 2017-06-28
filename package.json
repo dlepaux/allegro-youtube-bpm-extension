@@ -1,7 +1,7 @@
 {
-  "name": "extension-boilerplate",
+  "name": "allegro-youtube-bpm-extension",
   "version": "0.0.2",
-  "description": "A template for creating cross-browser extensions",
+  "description": "Simple and efficiency extension to analyse BPM/Tempo over youtube music videos.",
   "scripts": {
     "chrome-build": "cross-env TARGET=chrome gulp",
     "opera-build": "cross-env TARGET=opera gulp",
@@ -17,7 +17,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/EmailThis/extension-boilerplate"
+    "url": "https://github.com/dlepaux/allegro-youtube-bpm-extension"
   },
   "author": "David Lepaux <d.lepaux@gmail.com> (https://github.com/dlepaux)",
   "devDependencies": {
