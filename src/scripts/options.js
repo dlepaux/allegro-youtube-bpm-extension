@@ -4,6 +4,16 @@ import storage from "./utils/storage";
 var minTimeSelectors = document.querySelectorAll(".js-radio-mintime");
 var checkboxOnPlay = document.querySelector(".js-checkbox-onplay");
 
+// On INITIALIZATION
+/*
+var hash = window.location.hash.substr(1);
+if (hash.length == 0) {
+
+}*/
+
+
+
+
 ////////////
 //  ONPLAY
 ////////////

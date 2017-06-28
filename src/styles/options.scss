@@ -45,4 +45,9 @@
   }
 }
 
-
+a.atab + .atab--content {
+  display: none;
+}
+a.atab:target + .atab--content {
+  display:block;
+}

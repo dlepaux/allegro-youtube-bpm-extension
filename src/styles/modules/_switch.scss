@@ -1,4 +1,4 @@
-@import "modules/variables";
+@import "variables";
 
 $height: 11px;
 
@@ -6,6 +6,8 @@ $height: 11px;
   font-size: 10px;
   height: $height;
   line-height: $height;
+  margin-top: 9px;
+  margin-right: 5px;
 }
 
 input.switch[type=checkbox]{
