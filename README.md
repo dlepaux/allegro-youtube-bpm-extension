@@ -49,6 +49,7 @@ Pull requests are welcome. If you add functionality, then please add unit tests 
 ## <a name="credits"></a> Credits
 
 Thanks to Carl Törnqvist for his `https://github.com/tornqvist/bpm-detective` package
+
 Thanks to EmailThis for his amazing boilerplate `https://github.com/EmailThis/extension-boilerplate`
 
 ## <a name="licence"></a> Licence
