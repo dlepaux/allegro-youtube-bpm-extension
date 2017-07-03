@@ -1,6 +1,6 @@
 {
   "name": "allegro-youtube-bpm-extension",
-  "version": "0.0.2",
+  "version": "1.0.0",
   "description": "Simple and efficiency extension to analyse BPM/Tempo over youtube music videos.",
   "scripts": {
     "chrome-build": "cross-env TARGET=chrome gulp",

@@ -14,7 +14,7 @@
 
 <br>
 
-This extension is available on Chrome only for now... It permit to analyse and detect BPM on youtube music video ! Results are stored in the localStorage and showed in every visible title !
+This extension is available on Chrome, Firefox and Opera. It permit to analyse and detect BPM on youtube music video ! Results are stored in the extension memory and showed in every visible title !
 
 
 ## <a name="installation"></a> Installation
