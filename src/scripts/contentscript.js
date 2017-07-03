@@ -2,6 +2,7 @@ import ext from "./utils/ext";
 import storage from "./utils/storage";
 
 import Display from "./allegro/display";
+import allegro from "./allegro/allegro";
 import j2c from "j2c";
 import style from "./allegro/style";
 import Recorder from "./allegro/recorder";
@@ -18,6 +19,8 @@ global.allegro = {
 // Get and init style
 global.allegro.sheet = global.allegro.j2c.sheet(style.css);
 
+var HTMLElement = allegro.getAudioElement();
+var recorder = null;
 
 // Display recorded sound
 storage.getDataStored((data) => {
@@ -26,10 +29,8 @@ storage.getDataStored((data) => {
   global.allegro.display = display;
 
   // Try to catch a HTMLElement
-  var HTMLElement = global.allegro.env == 'development' ? document.querySelector('audio') : document.querySelector('video');
 
   // Recorder
-  var recorder = null;
   if (HTMLElement) {
     // Set recorder listener
     recorder = new Recorder({element: HTMLElement});
@@ -53,7 +54,6 @@ storage.getDataStored((data) => {
     //that.init();
   }, false);
 });
-
 
 
 ////////////////////////
@@ -88,37 +88,61 @@ if (global.allegro.env == 'development') {
 ////////////////////////
 
 
-var extractTags = () => {
+var extractPageData = () => {
   var url = document.location.href;
-  if(!url || !url.match(/^http/)) return;
+  if(!url || !url.match(/^http/) || !HTMLElement) return {hasAudio: false};
 
   var data = {
+    hasAudio: true,
+    youtubeId: "",
     title: "",
-    description: "",
-    url: document.location.href
+    origin: "",
+    duration: "",
+    isAnalysing: recorder.isAnalysing
   }
 
+  // Get origin
+  data.origin = document.location.hostname;
+
+  // Get youtube ID
+  var params = URL.getQueryParams(document.location.search);
+  if (typeof(params.v) != 'undefined') {
+    data.youtubeId = params.v;
+  } else {
+    data.youtubeId = params.id;
+  }
+
+  // Get durationForHuman
+  var date = new Date(null);
+  date.setSeconds(HTMLElement.duration); // specify value for SECONDS here
+  data.duration = date.toISOString().substr(11, 8);
+  if (data.duration.indexOf('00:00:') != -1) data.duration = data.duration.substring(3, data.duration.length);
+
+  // Get title
   var ogTitle = document.querySelector("meta[property='og:title']");
   if(ogTitle) {
     data.title = ogTitle.getAttribute("content")
   } else {
     data.title = document.title
   }
-
-  var descriptionTag = document.querySelector("meta[property='og:description']") || document.querySelector("meta[name='description']")
-  if(descriptionTag) {
-    data.description = descriptionTag.getAttribute("content")
-  }
-
+  console.log(data);
   return data;
 }
 
 function onRequest(request, sender, sendResponse) {
+  console.log('onMessage =)' + request.action);
   if (request.action === 'process-page') {
-    sendResponse(extractTags());
-    console.log('whoop whoop');
+    sendResponse(extractPageData());
   }
+  if (request.action === 'analyse-bpm') {
+    recorder.listen();
+    HTMLElement.play();
+  }
+  if (request.action === 'kill-analyze') {
+    console.log('kill mother fucker')
+    recorder.clear();
+  }
+
 }
-console.log('whoop whoop 2');
 
 ext.runtime.onMessage.addListener(onRequest);

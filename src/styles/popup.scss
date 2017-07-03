@@ -1,13 +1,13 @@
 @import "modules/reset";
 @import "modules/variables";
 @import "modules/layout";
+@import "modules/grid";
 @import "modules/utilities";
 @import "modules/switch";
 
 body, html {
   padding: 0;
   margin: 0;
-  height: 100%;
   min-width: 250px;
 
   /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#03cb58+0,3742b4+100 */
@@ -16,6 +16,9 @@ body, html {
   background: -webkit-linear-gradient(-45deg, rgba(3,203,88,1) 0%,rgba(55,66,180,1) 100%); /* Chrome10-25,Safari5.1-6 */
   background: linear-gradient(135deg, rgba(3,203,88,1) 0%,rgba(55,66,180,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#03cb58', endColorstr='#3742b4',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+}
+body {
+  height: 100%;
 }
 
 // Header
@@ -34,23 +37,55 @@ header {
 // Content
 .popup--content {
   background: rgba(0,0,0,0.5);
-  padding: 3.5em 0;
+  color: $light-blue;
+
+  &#display--detected {
+    padding: 5px;
+  }
+
 
   > p {
     font-size: 12px;
   }
 }
 
+.popup--padding-1 {
+  padding: 1em 0 1.4em;
+}
+.popup--padding-3 {
+  padding: 3em 0;
+}
 
+// Call To Action
+.popup--cta {
 
+}
 
+.video--detected {
+  font-size: 12px;
+}
+.video--origin {
+  font-size: 11px;
+}
+.video--details {
+  padding: 4px 5px;
+  h3, p {
+    font-size: 11px;
+  }
+}
 
-
-
-
-
-
-
+.display--body {
+  margin-top: 4px;
+  border: 2px solid $light-blue;
+  border-radius: 4px;
+  overflow: hidden;
+  .unit:first-child {
+    border-right: 1px solid $light-blue;
+  }
+  .unit:last-child {
+    border-left: 1px solid $light-blue;
+  }
+}
 
 // Footer
 footer {
@@ -94,64 +129,142 @@ footer {
   }
 }
 
-.popup-content {
-  min-width: 220px;
-  min-height: 100px;
-  max-width: 350px;
+.call-to-analyze, .analyzing, .analyzed {
+  padding: 4px 10px;
+}
+.bpm {
+  font-weight: bold;
+  font-size: 24px;
 }
 
-.app-name {
-  font-size: 14px;
-  text-transform: uppercase;
-  color: $text-secondary;
-  text-align: center;
-  margin: 0 auto 1em auto;
-  padding: 0;
-}
 
-.site-description {
-  padding: 0.5em;
-  border: 1px solid $gray;
-  margin: 0;
-
-  h3 {
-    margin: 0;
-    padding: 0;
-    border-bottom: 1px solid $gray;
-    padding-bottom: 0.5em;
-  }
-
-  .description {
-    color: $text-secondary;
-    max-height: 100px;
-    font-size: 0.8em;
-    line-height: 1.2;
-  }
-
-  .url {
-    outline: none;
-    text-decoration: none;
-    line-height: 1.2;
-    font-size: 0.8em;
-    word-break: break-word;
-    display: block;
-  }
-}
-
-.action-container {
-  margin: 1em auto;
+.progression-bar {
+  position: absolute;
+  display: block;
+  height: 2px;
+  width: 0%;
+  left:0;
+  bottom: 0;
+  background: #231f20;
 }
 
 .btn {
-  background: none;
-  border: none;
+  min-height: 35px;
+  line-height: 35px;
   display: inline-block;
   cursor: pointer;
-  padding: 0.5em 1.5em;
-  background: $brand-primary;
-  color: $white;
-  font-weight: $headings-font-weight;
-  border-radius: 2px;
+  border-radius: 4px;
   outline: none;
-  font-size: 1em;
+
+  > span {
+    line-height: 1;
+    vertical-align: middle;
+    display: none;
+    &.active {
+      display: inline-block;
+    }
+  }
 }
+
+/* State CSS Managment */
+.popup--cta {
+  position: relative;
+  // Call to Analyze
+  &.state-call-to-analyze {
+    .btn .call-to-analyze {
+      display: inline-block;
+    }
+    .btn {
+      background: #231f20;
+      box-shadow: 0 0 10px rgba(117, 182, 185, .75);
+      color: $lighten-blue;
+      font-weight: bold;
+      font-size: 12px;
+      transition: all .3s ease;
+      overflow: hidden;
+      position: relative;
+      &:hover {
+        background: $lighten-blue;
+        color: #231f20;
+        box-shadow: 0 0 20px 2px rgba(117, 182, 185, .75);
+      }
+      &:active, &:focus {
+        color: darken($lighten-blue, 5%);
+      }
+      &:active {
+        transition: all .1s ease;
+        box-shadow: 0 0 60px 2px rgba(117, 182, 185, 0);
+
+      }
+    }
+  }
+
+  // Common Analyzing & Analyzed style
+  &.state-analyzing, &.state-analyzed {
+    .btn {
+      background: $lighten-blue;
+      color: #231f20;
+
+      box-shadow: 0 0 10px #75b6b9;
+      font-weight: bold;
+      font-size: 12px;
+      transition: all .3s ease;
+      //overflow: hidden;
+      position: relative;
+      &:before {
+        cursor: pointer;
+        content: "×";
+        position: absolute;
+        top: 50%;
+        line-height: 1;
+        margin-top: -12px;
+        left: 0;
+        margin-left: -28px;
+        height: 28px;
+        font-size: 28px;
+        color: rgba(0, 0, 0, 0.5);
+        opacity: 1;
+        transition: opacity .5s ease-out;
+      }
+      &:hover {
+        color: #231f20;
+      }
+    }
+  }
+
+  // Analyzing
+  &.state-analyzing {
+    .btn {
+      cursor: wait;
+      .analyzing {
+        display: inline-block;
+      }
+    }
+  }
+
+  // Results
+  &.state-analyzed {
+    .btn {
+      cursor: default;
+      .analyzed {
+        display: inline-block;
+      }
+      &:before {
+        opacity: 0;
+      }
+    }
+    &:after {
+      cursor: pointer;
+      content: "Ce tempo vous semble incorrect ?";
+      color: rgba(117, 182, 185, .45);
+      font-size: 10px;
+      top: 100%;
+      margin-top: -18px;
+      position:absolute;
+      right:0;
+      left:0;
+    }
+  }
+}
+
+

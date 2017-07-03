@@ -28,11 +28,11 @@ storageCustom.storeResultInStorage = (id, bpm) => {
     console.log('_storeResultInStorage');
     // Check if already exist
     if (data.hasOwnProperty(id)) {
-      var result = confirm("You have already a value detected for this track ! (" + data[id] + "). Do you want to erase this ?");
-      if ( ! result) {
-        console.log('store skipped !');
+      //var result = confirm("You have already a value detected for this track ! (" + data[id] + "). Do you want to erase this ?");
+      //if ( ! result) {
+      //  console.log('store skipped !');
         return;
-      }
+      //}
     }
     save(data);
   });

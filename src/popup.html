@@ -14,17 +14,23 @@
       <div vlass="clearfix"></div>
     </header>
 
-
-
-
-    <div class="popup--content">
+    <!-- Default message -->
+    <div class="popup--content popup--padding-3" id="display--welcome">
       <p class="popup--welcome-text text-center text-light-blue">
-        Welcome in Allegro Extension !<br><br>
-
-        Enjoy all features by visiting<br>
-        <a href="http://youtube.com">Youtube.com</a>
+        Bienvenue sur Allegro,<br>
+        <br>
+        Profitez des fonctionnalités en jouant<br>une vidéo sur <a href="https://www.youtube.com" target="_blank" class="text-light-blue">Youtube</a> !
       </p>
+    </div>
 
+    <div class="popup--content" id="display--detected" style="display: none"></div>
+
+    <div class="popup--content popup--padding-1 popup--cta text-center state-call-to-analyze" id="display--buttons" style="display: none">
+      <a class="btn" id="call-to-action-btns">
+        <span class="call-to-analyze" id="call-to-analyze">ANALYSER BPM</span>
+        <span class="analyzing" id="analyzing">ANALYSE...<br><span id="progression"></span><span class="progression-bar" id="progression-bar"></span></span>
+        <span class="analyzed" id="analyzed">RÉSULTAT<br><span class="bpm" id="bpm"></span></span>
+      </a>
     </div>
 
     <footer>

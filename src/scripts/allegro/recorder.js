@@ -1,5 +1,6 @@
 'use strict';
 
+import ext from "./../utils/ext";
 import storage from "./../utils/storage";
 import buffer from "./../utils/buffer";
 import BPM from "./bpm";
@@ -51,6 +52,11 @@ class Recorder {
     this.audioBuffer = null;
     this.superBuffer = null;
     this.arrayBuffer = [];
+    // Counter
+    this.progressionPC = 0;
+    this.timeSpent = 0.0;
+    // Flag
+    this.isAnalysing = false;
   }
 
   clear () {
@@ -63,23 +69,34 @@ class Recorder {
     this.audioBuffer = null;
     this.superBuffer = null;
     this.arrayBuffer = [];
+
+    this.progressionPC = 0;
+    this.timeSpent = 0.0;
+
+    this.isAnalysing = false;
   }
 
   listenAudioProcess () {
     console.log('listenAudioProcess');
     var that = this;
     this.scriptNode.onaudioprocess = function (e) {
-      console.log('onaudioprocess running !');
-      // Get/Concat AudioBuffer
-      if (that.audioBuffer == null) {
-        that.audioBuffer = e.inputBuffer;
-      } else {
-        that.audioBuffer = buffer.concatenateAudioBuffers(that.audioBuffer, e.inputBuffer);
-      }
-      if (that.audioBuffer.duration > 10) {
-        that.arrayBuffer.push(that.audioBuffer);
-        that.increment++;
-        that.audioBuffer = null;
+      if (that.isAnalysing) {
+        // Send calculated progression to popup
+        that.timeSpent += e.inputBuffer.duration;
+        that.progressionPC = that.progressionPC >= 100 ? 100 : (100 * that.timeSpent / that.options.element.duration).toFixed(2);
+        chrome.runtime.sendMessage({action: 'progression', progression: that.progressionPC});
+
+        // Get/Concat AudioBuffer
+        if (that.audioBuffer == null) {
+          that.audioBuffer = e.inputBuffer;
+        } else {
+          that.audioBuffer = buffer.concatenateAudioBuffers(that.audioBuffer, e.inputBuffer);
+        }
+        if (that.audioBuffer.duration > 10) {
+          that.arrayBuffer.push(that.audioBuffer);
+          that.increment++;
+          that.audioBuffer = null;
+        }
       }
     }
   }
@@ -93,8 +110,10 @@ class Recorder {
     this.options.element.onpause = (e) => {
       console.log('onpause fired');
       global.allegro.audioContext.suspend();
+      that.isAnalysing = false;
       that.options.element.onplay = function (e) {
         console.log('audioContext.resume');
+        that.isAnalysing = true;
         global.allegro.audioContext.resume();
       }
     }
@@ -108,21 +127,25 @@ class Recorder {
         console.log('onplay event setted');
         that.options.element.onplay = (e) => {
           console.log('onplay fired');
+          that.isAnalysing = true;
           that.listenAudioProcess();
         }
         // On Pause on recording
         that.options.element.onpause = (e) => {
           console.log('onpause fired');
           global.allegro.audioContext.suspend();
+          that.isAnalysing = false;
           that.options.element.onplay = function (e) {
             console.log('audioContext.resume');
             global.allegro.audioContext.resume();
+            that.isAnalysing = true;
             that.listenAudioProcess();
           }
         }
 
         if (that.options.element.playing || ! that.options.element.paused) {
           console.log('video auto played');
+          that.isAnalysing = true;
           that.listenAudioProcess();
         } else {
           console.log('video not auto played');
@@ -134,7 +157,7 @@ class Recorder {
     // Analyse at End !
     this.options.element.onended = function (e) {
       console.log('onended fired');
-
+      that.isAnalysing = false;
       var superBuffer = buffer.getSuperBuffer(that.increment, that.arrayBuffer);
       if (that.increment == 0) {
         console.log('increment equal zero');
@@ -149,6 +172,7 @@ class Recorder {
         var params = URL.getQueryParams(document.location.search);
         if (typeof(params.v) != 'undefined') {
           storage.storeResultInStorage(params.v, bpm);
+          chrome.runtime.sendMessage({action: 'audio-analyzed', bpm: bpm});
           console.log(bpm);
         } else {
           console.log('No "v" data found in URL... Record cannot be stored !');
@@ -160,6 +184,5 @@ class Recorder {
 
   }
 }
-
 
 module.exports = Recorder;

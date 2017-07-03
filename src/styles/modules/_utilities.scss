@@ -11,6 +11,16 @@
 // Text colors
 .text-light-blue {
   color: $light-blue;
+  &:hover {
+    color: $light-blue;
+  }
+}
+
+.text-grey-green {
+  color: $grey-green;
+  &:hover {
+    color: $grey-green;
+  }
 }
 
 // Float
