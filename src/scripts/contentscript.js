@@ -82,6 +82,16 @@ if (global.allegro.env == 'development') {
     HTMLElement.currentTime = 0;
     HTMLElement.pause();
   });
+
+  window.onpopstate = function(e){
+    if(e.state){
+      document.title = e.state.pageTitle;
+    }
+  };
+
+  var wait = setTimeout( function () {
+    HTMLElement.play();
+  }, 300);
 }
 ////////////////////////
 // END
@@ -144,3 +154,4 @@ ext.runtime.onMessage.addListener( function (request, sender, sendResponse) {
     storage.storeResultInStorage(request.v, request.bpm);
   }
 });
+

@@ -177,6 +177,24 @@ class Recorder {
         } else {
           console.log('No "v" data found in URL... Record cannot be stored !');
         }
+
+        if (global.allegro.env == 'development') {
+          console.log('pushState');
+          var hash = Math.random().toString(36).slice(-8);
+          var newPath = '/?v=' + hash;
+          window.history.pushState({"pageTitle": hash}, "", newPath);
+          document.title = hash;
+          that.options.element.currentTime = 0;
+
+          var eventRequest = new CustomEvent("spfrequest", { "detail": "Example of an event" });
+          document.dispatchEvent(eventRequest);
+
+          var wait = setTimeout(function () {
+            var eventDone = new CustomEvent("spfdone", { "detail": "Example of an event" });
+            document.dispatchEvent(eventDone);
+            that.options.element.play();
+          }, 300);
+        }
       } catch (e) {
         console.log(e);
       }
