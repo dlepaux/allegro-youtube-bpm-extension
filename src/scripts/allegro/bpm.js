@@ -23,7 +23,7 @@ function detect(buffer) {
     findPeaks,
     identifyIntervals,
     groupByTempo(buffer.sampleRate),
-    getTopCandidate
+    getTopCandidates
   ].reduce(
    (state, fn) => fn(state),
     source.buffer.getChannelData(0)
@@ -36,10 +36,8 @@ function detect(buffer) {
  * @return {Number}
  */
 
-function getTopCandidate(candidates) {
-  return candidates
-    .sort((a, b) => (b.count - a.count))
-    .splice(0, 5)[0].tempo;
+function getTopCandidates(candidates) {
+  return candidates.sort((a, b) => (b.count - a.count));
 }
 
 /**

@@ -77,7 +77,7 @@ class Recorder {
   }
 
   listenAudioProcess () {
-    console.log('listenAudioProcess');
+    console.log('listenAudioProcess' + this.options.element.duration);
     var that = this;
     this.scriptNode.onaudioprocess = function (e) {
       if (that.isAnalysing) {
@@ -164,15 +164,15 @@ class Recorder {
         superBuffer = that.audioBuffer;
       }
       try {
-        var bpm = BPM(superBuffer);
-        console.log('BPM is : ' + bpm);
+        var bpmCandidates = BPM(superBuffer);
+        var bpm = bpmCandidates.splice(0, 5)[0].tempo;
         that.clear();
 
         // Get param v value
         var params = URL.getQueryParams(document.location.search);
         if (typeof(params.v) != 'undefined') {
           storage.storeResultInStorage(params.v, bpm);
-          chrome.runtime.sendMessage({action: 'audio-analyzed', bpm: bpm});
+          chrome.runtime.sendMessage({action: 'audio-analyzed', bpm: bpm, bpmCandidates: bpmCandidates});
           console.log(bpm);
         } else {
           console.log('No "v" data found in URL... Record cannot be stored !');

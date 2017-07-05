@@ -8,8 +8,8 @@
     <header>
       <img class="popup--icon" src="icons/icon-38.png" />
       <div class="switch--container float right">
-        <span class="label">Auto detect</span>
-        <input type="checkbox" id="switch" class="switch" /><label for="switch"></label>
+        <input style="float:right;" type="checkbox" id="onplay" class="switch" /><label style="float:right;" for="onplay"></label>
+        <span style="float:right;" class="label">Auto detect</span>
       </div>
       <div vlass="clearfix"></div>
     </header>
@@ -28,7 +28,7 @@
     <div class="popup--content popup--padding-1 popup--cta text-center state-call-to-analyze" id="display--buttons" style="display: none">
       <a class="btn" id="call-to-action-btns">
         <span class="call-to-analyze" id="call-to-analyze">ANALYSER BPM</span>
-        <span class="analyzing" id="analyzing">ANALYSE...<br><span id="progression"></span><span class="progression-bar" id="progression-bar"></span></span>
+        <span class="analyzing" id="analyzing">ANALYSE...<br><span id="progression-text"></span><span class="progression-bar" id="progression-bar"></span></span>
         <span class="analyzed" id="analyzed">RÉSULTAT<br><span class="bpm" id="bpm"></span></span>
       </a>
     </div>
@@ -39,6 +39,8 @@
         <li><a href="#options" class="js-options"><img src="images/icon-cog.png" alt="icon-cog"/> Paramètres</a></li>
       </ul>
     </footer>
+
+    <div class="bpm-candidates" id="bpm-candidates"></div>
 
     <script src="scripts/popup.js"></script>
   </body>

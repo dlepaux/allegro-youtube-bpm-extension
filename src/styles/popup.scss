@@ -69,8 +69,17 @@ header {
 }
 .video--details {
   padding: 4px 5px;
+  position: relative;
+
   h3, p {
     font-size: 11px;
+  }
+  h3 {
+    margin-bottom: 7px;
+  }
+  p {
+    margin: 0;
+    color: darken($light-blue, 15%);
   }
 }
 
@@ -137,6 +146,13 @@ footer {
   font-size: 24px;
 }
 
+.bpm-candidates {
+  position: absolute;
+  bottom: 0;
+  left:0;
+  right:0;
+  background: rgba(0,0,0,.7);
+}
 
 .progression-bar {
   position: absolute;
@@ -183,13 +199,10 @@ footer {
       transition: all .3s ease;
       overflow: hidden;
       position: relative;
-      &:hover {
+      &:active, &:focus, &:hover {
         background: $lighten-blue;
         color: #231f20;
         box-shadow: 0 0 20px 2px rgba(117, 182, 185, .75);
-      }
-      &:active, &:focus {
-        color: darken($lighten-blue, 5%);
       }
       &:active {
         transition: all .1s ease;

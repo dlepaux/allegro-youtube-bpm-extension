@@ -116,7 +116,7 @@ var extractPageData = () => {
   var date = new Date(null);
   date.setSeconds(HTMLElement.duration); // specify value for SECONDS here
   data.duration = date.toISOString().substr(11, 8);
-  if (data.duration.indexOf('00:00:') != -1) data.duration = data.duration.substring(3, data.duration.length);
+  if (data.duration.indexOf('00:') === 0 ) data.duration = data.duration.substring(3, data.duration.length);
 
   // Get title
   var ogTitle = document.querySelector("meta[property='og:title']");
