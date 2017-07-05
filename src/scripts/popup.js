@@ -33,11 +33,41 @@ function updateProgression (percent) {
 /**
  * Set Data for the last state on the chain (call-to-analyse => analyzing => analyzed !)
  */
+function updateBPM (bpm) {
+  var bpmInner = document.getElementById('bpm');
+  bpmInner.innerHTML = bpm + 'BPM';
+}
+function closeBPMCandidateDialog () {
+  document.querySelector('.bpm-candidates').style.display = 'none';
+}
 function updateStateToAnalyzed (request) {
   updateButtonStateTo("analyzed");
-  var bpmInner = document.getElementById('bpm');
-  bpmInner.innerHTML = request.bpm + 'BPM';
-
+  updateBPM(request.bpm);
+  // Feed bpm candidates
+  var templateCandidates = '<ul>';
+  for (var o in request.bpmCandidates) {
+    var startLi = '<li>';
+    if (o == 0) {
+      startLi = '<li class="active">';
+    }
+    templateCandidates += startLi + '<span class="head">' + (parseInt(o) + 1) + '</span><span class="count">' + request.bpmCandidates[o].count + 'x</span><span class="tempo">' + request.bpmCandidates[o].tempo + '</span></li>';
+  }
+  templateCandidates += '</ul><div class="clearfix"></div>';
+  var bpmCandidatesContainer = document.getElementById('bpm-candidates');
+  bpmCandidatesContainer.innerHTML = templateCandidates;
+  // Listen submit
+  var buttonUpdateBPM = document.getElementById('submit-bpm-update');
+  buttonUpdateBPM.addEventListener('click', function (e) {
+    var bpm = document.querySelector('#bpm-candidates li.active span.tempo').innerHTML;
+    updateBPM(bpm);
+    ext.tabs.query({active: true, currentWindow: true}, function(tabs) {
+      var activeTab = tabs[0];
+      chrome.tabs.sendMessage(activeTab.id, { action: 'update-bpm', v: request.v, bpm: bpm}, function (data) {
+        closeBPMCandidateDialog();
+        buttonUpdateBPM.removeEventListener('click');
+      });
+    });
+  });
 }
 
 
@@ -55,6 +85,13 @@ optionsLink.forEach(function(el) {
     ext.tabs.create({'url': ext.extension.getURL('options.html') + el.getAttribute('href')});
   })
 })
+
+
+/**
+ * Set Listenerfor bpmCandidate Dialog
+ */
+var closeBpmCandidate = document.querySelector('.bpm-candidates .close');
+closeBpmCandidate.addEventListener('click', closeBPMCandidateDialog);
 
 /**
  * Set listener on Call To Action
@@ -80,10 +117,32 @@ btnAnalyse && btnAnalyse.addEventListener('click', function (e) {
       });
     });
   }
+});
 
+var btnContainer = document.getElementById('display--buttons');
+btnContainer && btnContainer.addEventListener('click', function (e) {
   // State Analyzed
   if (state == "analyzed") {
-
+    // Show BPM Candidate dialog
+    var bpmCandidatesContainer = document.getElementById('bpm-candidates');
+    bpmCandidatesContainer.parentNode.style.display = 'block';
+    var bpmCandidatesElements = document.querySelectorAll('#bpm-candidates ul li');
+    bpmCandidatesElements.forEach(function (el) {
+      el.addEventListener("click", function (e) {
+        // Reset active flag
+        bpmCandidatesElements.forEach(function (element) {
+          element.classList.remove('active');
+        });
+        // Set active
+        el.classList.add('active');
+        // Update with right BPM
+        for (var i = 0; i < el.childNodes.length; i++) {
+          if (el.childNodes[i].className == "tempo") {
+            updateBPM(el.childNodes[i].innerHTML);
+          }
+        }
+      })
+    });
   }
 });
 
@@ -126,24 +185,26 @@ var templateVideoDetected = (data) => {
 
 
 
-
-storage.get(function(dataStored) {
-  var renderContent = (data) => {
+/**
+ * Get ALL sync extension data
+ */
+storage.get(function(data) {
+  var renderContent = (params) => {
     var displayContainer = document.getElementById("display--detected")
 
-    if (data.hasAudio) {
+    if (params.hasAudio) {
       var welcomeContainer = document.getElementById("display--welcome")
       welcomeContainer.style.display = "none";
       displayContainer.style.display = "block";
       buttonContainer.style.display = "block";
     }
 
-    if (data.isAnalysing) {
+    if (params.isAnalysing) {
       updateButtonStateTo("analyzing");
     }
 
-    data.bpm = typeof(dataStored.detectedVideos[data.youtubeId]) != 'undefined' ? dataStored.detectedVideos[data.youtubeId] : '?';
-    var tmpl = templateVideoDetected(data);
+    params.bpm = typeof(data.detectedVideos[params.youtubeId]) != 'undefined' ? data.detectedVideos[params.youtubeId] : '?';
+    var tmpl = templateVideoDetected(params);
     displayContainer.innerHTML = tmpl;
   }
 
@@ -159,7 +220,7 @@ storage.get(function(dataStored) {
    * Sync DOM Elements
    */
   var onPlaySwitch = document.getElementById('onplay');
-  onPlaySwitch.checked = dataStored.onplay;
+  onPlaySwitch.checked = data.onplay;
   onPlaySwitch.addEventListener('change', function (e) {
     var isChecked = this.checked;
     storage.set({ onplay: isChecked }, function () {

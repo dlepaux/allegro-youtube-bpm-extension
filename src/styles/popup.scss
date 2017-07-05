@@ -147,11 +147,120 @@ footer {
 }
 
 .bpm-candidates {
+  color: #111;
+  display: none;
   position: absolute;
   bottom: 0;
   left:0;
+  top:0;
   right:0;
-  background: rgba(0,0,0,.7);
+  background: #fff;
+  margin: 1em;
+  border-radius: 5px;
+  padding: 1em;
+
+  h4 {
+    border-bottom: 1px solid rgba(255,255,255,0.75);
+    margin-bottom: .3em;
+  }
+  p {
+    font-size: 12px;
+    color: #333;
+  }
+
+  .close {
+    position:absolute;
+    top:0px;
+    right:10px;
+    font-size: 24px;
+    color: grey;
+    cursor: pointer;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    position:relative;
+
+    & + .clearfix {
+      margin-bottom: 1em;
+    }
+
+    li {
+      position:relative;
+      float:left;
+      width: calc(20% - 8px);
+      color: darken(grey, 25%);
+      background: lighten(grey, 30%);
+      font-size: 10px;
+      list-style: none;
+      text-align: center;
+      border: 1px solid;
+      border-color: darken(grey, 25%);
+      margin: 3px 4px;
+      box-sizing: border-box;
+      border-radius: 4px;
+      overflow: hidden;
+      cursor: pointer;
+      opacity:.5;
+      transition: opacity .3s ease;
+
+      &.active, &.active:hover, &.active:focus, &.active:active {
+        opacity:1;
+        cursor: default;
+      }
+      &:hover, &:focus, &:active {
+        opacity: .75;
+      }
+
+
+      &:nth-child(1) {
+        color: darken(#FFD700, 25%);
+        border-color: darken(#FFD700, 25%);
+        background: lighten(#FFD700, 30%);
+        .head {
+          border-color: darken(#FFD700, 25%);
+          color: #FFD700;
+          background: darken(#FFD700, 20%);
+        }
+      }
+      &:nth-child(2) {
+        color: darken(#C0C0C0, 25%);
+        border-color: darken(#C0C0C0, 25%);
+        background: lighten(#C0C0C0, 30%);
+        .head {
+          border-color: darken(#C0C0C0, 25%);
+          color: #C0C0C0;
+          background: darken(#C0C0C0, 20%);
+        }
+      }
+      &:nth-child(3) {
+        color: darken(#cd7f32, 25%);
+        border-color: darken(#cd7f32, 25%);
+        background: lighten(#cd7f32, 30%);
+        .head {
+          border-color: darken(#cd7f32, 25%);
+          color: #cd7f32;
+          background: darken(#cd7f32, 20%);
+        }
+      }
+
+      .head {
+        display: block;
+        color: grey;
+        border-bottom: 1px solid grey;
+        background: darken(grey, 20%);
+      }
+      .count {
+        display: block;
+      }
+      .tempo {
+        display: block;
+        font-size: 12px;
+        font-weight: bold;
+      }
+    }
+  }
 }
 
 .progression-bar {
@@ -179,6 +288,26 @@ footer {
     &.active {
       display: inline-block;
     }
+  }
+}
+
+.btn-default {
+  /* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#03cb58+0,3742b4+100 */
+  background: rgb(3,203,88); /* Old browsers */
+  background: -moz-linear-gradient(-45deg, rgba(3,203,88,1) 0%, rgba(55,66,180,1) 100%); /* FF3.6-15 */
+  background: -webkit-linear-gradient(-45deg, rgba(3,203,88,1) 0%,rgba(55,66,180,1) 100%); /* Chrome10-25,Safari5.1-6 */
+  background: linear-gradient(135deg, rgba(3,203,88,1) 0%,rgba(55,66,180,1) 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#03cb58', endColorstr='#3742b4',GradientType=1 ); /* IE6-9 fallback on horizontal gradient */
+
+  color: #fff;
+  padding: 0px 10px;
+  font-size: 12px;
+
+  &:hover, &:focus, &:active {
+    color: #fff;
+  }
+  &:active {
+    box-shadow: inset 0 3px 5px rgba(0,0,0,.125);
   }
 }
 

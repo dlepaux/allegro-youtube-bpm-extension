@@ -129,8 +129,7 @@ var extractPageData = () => {
   return data;
 }
 
-function onRequest(request, sender, sendResponse) {
-  console.log('onMessage =)' + request.action);
+ext.runtime.onMessage.addListener( function (request, sender, sendResponse) {
   if (request.action === 'process-page') {
     sendResponse(extractPageData());
   }
@@ -139,10 +138,9 @@ function onRequest(request, sender, sendResponse) {
     HTMLElement.play();
   }
   if (request.action === 'kill-analyze') {
-    console.log('kill mother fucker')
     recorder.clear();
   }
-
-}
-
-ext.runtime.onMessage.addListener(onRequest);
+  if (request.action === 'update-bpm') {
+    storage.storeResultInStorage(request.v, request.bpm);
+  }
+});

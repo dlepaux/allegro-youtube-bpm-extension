@@ -37,7 +37,7 @@ function detect(buffer) {
  */
 
 function getTopCandidates(candidates) {
-  return candidates.sort((a, b) => (b.count - a.count));
+  return candidates.sort((a, b) => (b.count - a.count)).splice(0, 5);
 }
 
 /**

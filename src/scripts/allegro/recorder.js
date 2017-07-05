@@ -165,14 +165,14 @@ class Recorder {
       }
       try {
         var bpmCandidates = BPM(superBuffer);
-        var bpm = bpmCandidates.splice(0, 5)[0].tempo;
+        var bpm = bpmCandidates[0].tempo;
         that.clear();
 
         // Get param v value
         var params = URL.getQueryParams(document.location.search);
         if (typeof(params.v) != 'undefined') {
           storage.storeResultInStorage(params.v, bpm);
-          chrome.runtime.sendMessage({action: 'audio-analyzed', bpm: bpm, bpmCandidates: bpmCandidates});
+          chrome.runtime.sendMessage({action: 'audio-analyzed', v: params.v, bpm: bpm, bpmCandidates: bpmCandidates});
           console.log(bpm);
         } else {
           console.log('No "v" data found in URL... Record cannot be stored !');
