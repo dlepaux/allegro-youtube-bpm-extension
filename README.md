@@ -40,6 +40,7 @@ Run `npm run dist` to create a zipped, production-ready extension for each brows
 - [ ] Add support for Safari
 - [ ] Add Chrome, Firefox & Opera Promo images
 - [ ] Add sample screenshot templates
+- [ ] Upgrade UX Dashboard
 - [ ] Convert native DOM with React / Mithril
 
 ## <a name="contributing"></a> Contributing
