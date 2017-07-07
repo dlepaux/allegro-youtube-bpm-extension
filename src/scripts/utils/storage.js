@@ -15,7 +15,7 @@ storageCustom.getDataStored = (callback) => {
 // Store BPMs in localStorage
 storageCustom.storeResultInStorage = (id, bpm) => {
   var save = (data) => {
-    data[id] = bpm;
+    data[id] = bpm.toString();
     storageCustom.set({
       detectedVideos: data
     }, function () {
@@ -34,6 +34,24 @@ storageCustom.storeResultInStorage = (id, bpm) => {
       //  return;
       //}
     //}
+    save(data);
+  });
+}
+
+storageCustom.removeDataStored = (id) => {
+  var save = (data) => {
+    storageCustom.set({
+      detectedVideos: data
+    }, function () {
+      console.log('Remove Sync succeed !');
+    });
+  }
+
+  storageCustom.getDataStored( function (data) {
+    console.log(data);
+    console.log(id);
+    console.log(data[id]);
+    delete data[id];
     save(data);
   });
 }

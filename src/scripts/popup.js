@@ -164,7 +164,6 @@ ext.runtime.onMessage.addListener( function (request, sender, sendResponse) {
 //////////////////// DOM Templating / Injection
 ////////////////////
 var templateVideoDetected = (data) => {
-  var json = JSON.stringify(data);
   return (`
     <div class="display--head grid">
       <div class="unit half video--detected">Vidéo détecté</div>

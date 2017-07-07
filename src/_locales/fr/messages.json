@@ -6,9 +6,5 @@
   "appDescription": {
     "message": "Analyser le BPM/Tempo en temps réel sur toutes les vidéos musicales sur Youtube, les données sont stockées dans votre localStockage.",
     "description":"La description de l'application, affiché dans le chrome store."
-  },
-  "btnTooltip": {
-    "message": "Allegro",
-    "description": "Tooltip for the button."
   }
 }

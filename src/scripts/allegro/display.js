@@ -7,20 +7,27 @@ import URL from './url';
  */
 class Display {
 
-  // Config is required
+  /**
+   * Constructor
+   * @param  {Array} data  Required, contain objects with key = id, value = bpm
+   */
   constructor(data) {
     // Dependencies :
-    /**
+    /** //j2c
       'primary-color'
       'icon-circle'
       'text-expose'
     */
-    console.log(global.allegro);
     this.data = data;
   }
 
-  // Private mehtod
-  // Format of BPM in title
+  /**
+   * Add the BPM before the title text
+   * @param  {Integer}  bpm   Value of tempo
+   * @param  {String}  title  InnerHTML of the title node
+   * @param  {Boolean} clear  Default to false, permit to restore title
+   * @return {String}         Title with the BPM at first :)
+   */
   _bpmTitleFormat (bpm, title, clear = false) {
     if (clear) {
       if (title.match(/\<span\ class\=.*\<\/span\>\ \-\ /g)) {
@@ -35,8 +42,10 @@ class Display {
   }
 
 
-  // Public mehtod
-  // Find and add all video title with [XXX BPM] <title>
+  /**
+   * Check DOM to find title nodes (a:link with the video ID, and specific querySelectors)
+   * @param {Boolean} clear  Default to false, permit to restore title
+   */
   addBPMinTitles (clear = false) {
     console.log('addBPMinTitles !');
     if (global.allegro.env != 'production') console.log('start addBPM');
@@ -69,6 +78,10 @@ class Display {
     if (global.allegro.env != 'production') console.log('end addBPM');
   }
 
+  /**
+   * Update BPM in each visible title
+   * @param  {Array} data  Contain objects with key = id, value = bpm
+   */
   update (data) {
     console.log('update title !');
     this.data = data;

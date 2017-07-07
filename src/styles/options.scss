@@ -51,3 +51,10 @@ a.atab + .atab--content {
 a.atab:target + .atab--content {
   display:block;
 }
+
+
+.detected-bpms {
+  img {
+    margin-bottom: 6px;
+  }
+}

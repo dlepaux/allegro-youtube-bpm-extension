@@ -14,7 +14,7 @@
 
 <br>
 
-This extension is available on Chrome, Firefox and Opera. It permit to analyse and detect BPM on youtube music video ! Results are stored in the extension memory and showed in every visible title !
+This extension is available on (dev mode) Chrome, Firefox and Opera. It permit to analyse and detect BPM on youtube music video ! Results are stored in the extension memory and showed in every visible title !
 
 
 ## <a name="installation"></a> Installation
@@ -38,19 +38,18 @@ Run `npm run dist` to create a zipped, production-ready extension for each brows
 
 ## TODO
 - [ ] Add support for Safari
-- [x] Add Firefox & Opera Promo images
-- [x] Add sample screenshot templates
-- [ ] Write a guide for using config variables & JS preprocessor
+- [ ] Add Chrome, Firefox & Opera Promo images
+- [ ] Add sample screenshot templates
+- [ ] Convert native DOM with React / Mithril
 
 ## <a name="contributing"></a> Contributing
-
 Pull requests are welcome. If you add functionality, then please add unit tests to cover it.
 
 ## <a name="credits"></a> Credits
 
 Thanks to Carl Törnqvist for his `https://github.com/tornqvist/bpm-detective` package
 
-Thanks to EmailThis for his amazing boilerplate `https://github.com/EmailThis/extension-boilerplate`
+Thanks to EmailThis for his amazing extension boilerplate `https://github.com/EmailThis/extension-boilerplate`
 
 ## <a name="licence"></a> Licence
 

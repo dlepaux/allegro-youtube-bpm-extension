@@ -1,6 +1,74 @@
 import ext from "./utils/ext";
 import storage from "./utils/storage";
 
+// Extend Object
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+/**
+ * Get ALL sync extension data
+ */
+storage.getDataStored(function(data) {
+  var container = document.querySelector('.detected-bpms');
+  var list = (`<h3>${Object.size(data)} videos détectés</h3><br>`);
+  for(var o in data) {
+    list += (`
+      <div class="unit one-third">
+        <div class="grid">
+          <div class="unit half">
+            <img src="https://i.ytimg.com/vi/${o}/default.jpg" width="117px" height="88px" alt="cover"/>
+          </div>
+          <div class="unit half">
+            <a target="_blank" href="https://youtube.com/watch?v=${o}">Voir la vidéo</a><br>
+            <strong>BPM ${data[o]}</strong>
+            <a href="#" class="remove" data-key="${o}">Effacer</a>
+          </div>
+        </div>
+      </div>
+    `);
+  }
+  container.innerHTML = list;
+
+  function removeBPM (e) {
+    e.preventDefault();
+    var id = e.currentTarget.getAttribute('data-key');
+    storage.removeDataStored(id);
+    e.currentTarget.parentNode.parentNode.parentNode.remove();
+  }
+
+  var wait = setTimeout( function () {
+    var removeLinks = document.querySelectorAll('.detected-bpms a.remove');
+    removeLinks.forEach( function (el) {
+      el.addEventListener('click', removeBPM);
+    });
+  }, 120);
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var minTimeSelectors = document.querySelectorAll(".js-radio-mintime");
 var checkboxOnPlay = document.querySelector(".js-checkbox-onplay");
 
@@ -10,6 +78,13 @@ var hash = window.location.hash.substr(1);
 if (hash.length == 0) {
 
 }*/
+
+
+
+
+
+
+
 
 
 
