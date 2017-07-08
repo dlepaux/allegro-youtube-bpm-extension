@@ -89,9 +89,10 @@ if (global.allegro.env == 'development') {
     }
   };
 
+  /* AutoPlay
   var wait = setTimeout( function () {
     HTMLElement.play();
-  }, 300);
+  }, 300);*/
 }
 ////////////////////////
 // END
