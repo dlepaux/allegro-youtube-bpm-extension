@@ -1,229 +1,213 @@
 import ext from "./utils/ext";
 import storage from "./utils/storage";
 import allegro from "./allegro/allegro";
-
-// Set Initial State
-var state = "call-to-analyze";
+import m from "mithril";
 
 
-
-////////////////////
-//////////////////// DOM Modifier
-////////////////////
-/**
- * Update the button state (classNames, and variable)
- */
-var buttonContainer = document.getElementById("display--buttons")
-function updateButtonStateTo (newState) {
-  buttonContainer.classList.remove('state-' + state);
-  buttonContainer.classList.add('state-' + newState);
-  state = newState;
+function isCheckboxChecked (value) {
+  return value ? 'checked' : '';
 }
 
-/**
- * Progression Managment
- */
-var progressionText = document.getElementById('progression-text');
-var progressionBar = document.getElementById('progression-bar');
-function updateProgression (percent) {
-  progressionText.innerHTML = percent + ' %';
-  progressionBar.style.width = percent + '%';
-}
-
-/**
- * Set Data for the last state on the chain (call-to-analyse => analyzing => analyzed !)
- */
-function updateBPM (bpm) {
-  var bpmInner = document.getElementById('bpm');
-  bpmInner.innerHTML = bpm + 'BPM';
-}
-function closeBPMCandidateDialog () {
-  document.querySelector('.bpm-candidates').style.display = 'none';
-}
-function updateStateToAnalyzed (request) {
-  updateButtonStateTo("analyzed");
-  updateBPM(request.bpm);
-  // Feed bpm candidates
-  var templateCandidates = '<ul>';
-  for (var o in request.bpmCandidates) {
-    var startLi = '<li>';
-    if (o == 0) {
-      startLi = '<li class="active">';
-    }
-    templateCandidates += startLi + '<span class="head">' + (parseInt(o) + 1) + '</span><span class="count">' + request.bpmCandidates[o].count + 'x</span><span class="tempo">' + request.bpmCandidates[o].tempo + '</span></li>';
-  }
-  templateCandidates += '</ul><div class="clearfix"></div>';
-  var bpmCandidatesContainer = document.getElementById('bpm-candidates');
-  bpmCandidatesContainer.innerHTML = templateCandidates;
-  // Listen submit
-  var buttonUpdateBPM = document.getElementById('submit-bpm-update');
-  buttonUpdateBPM.addEventListener('click', function (e) {
-    var bpm = document.querySelector('#bpm-candidates li.active span.tempo').innerHTML;
-    updateBPM(bpm);
-    ext.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      var activeTab = tabs[0];
-      chrome.tabs.sendMessage(activeTab.id, { action: 'update-bpm', v: request.v, bpm: bpm}, function (data) {
-        closeBPMCandidateDialog();
-        buttonUpdateBPM.removeEventListener('click');
-      });
-    });
-  });
+var state = {
+  status: "call-to-analyze",
+  modalOpen: false,
 }
 
 
 
-////////////////////
-//////////////////// Listeners
-////////////////////
-/**
- * Set EventListener on footer link with an anchor to target the right tab in option page
- */
-var optionsLink = document.querySelectorAll(".js-options");
-optionsLink.forEach(function(el) {
-  el.addEventListener("click", function(e) {
+var PopupComponent = {
+  // Modal
+  openModalDialog: function (e = null) {
+    e && e.preventDefault();
+    state.modalOpen = true;
+    m.redraw();
+  },
+  closeModalDialog: function (e = null) {
+    e && e.preventDefault();
+    state.modalOpen = false;
+    m.redraw();
+  },
+
+  // Links
+  openLink: function(e) {
     e.preventDefault();
-    ext.tabs.create({'url': ext.extension.getURL('options.html') + el.getAttribute('href')});
-  })
-})
+    ext.tabs.create({'url': ext.extension.getURL('options.html') + e.currentTarget.getAttribute('href')});
+  },
 
 
-/**
- * Set Listenerfor bpmCandidate Dialog
- */
-var closeBpmCandidate = document.querySelector('.bpm-candidates .close');
-closeBpmCandidate.addEventListener('click', closeBPMCandidateDialog);
 
-/**
- * Set listener on Call To Action
- */
-var btnAnalyse = document.getElementById('call-to-action-btns');
-btnAnalyse && btnAnalyse.addEventListener('click', function (e) {
-  // State : Call to analyze
-  if (state == "call-to-analyze") {
-    ext.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      var activeTab = tabs[0];
-      chrome.tabs.sendMessage(activeTab.id, { action: 'analyse-bpm' }, function (data) {
-        updateButtonStateTo("analyzing");
-      });
-    });
-  }
 
-  // State Analyzing
-  if (state == "analyzing") {
-    ext.tabs.query({active: true, currentWindow: true}, function(tabs) {
-      var activeTab = tabs[0];
-      chrome.tabs.sendMessage(activeTab.id, { action: 'kill-analyze' }, function (data) {
-        updateButtonStateTo("call-to-analyze");
-      });
-    });
-  }
-});
-
-var btnContainer = document.getElementById('display--buttons');
-btnContainer && btnContainer.addEventListener('click', function (e) {
-  // State Analyzed
-  if (state == "analyzed") {
-    // Show BPM Candidate dialog
-    var bpmCandidatesContainer = document.getElementById('bpm-candidates');
-    bpmCandidatesContainer.parentNode.style.display = 'block';
-    var bpmCandidatesElements = document.querySelectorAll('#bpm-candidates ul li');
-    bpmCandidatesElements.forEach(function (el) {
-      el.addEventListener("click", function (e) {
-        // Reset active flag
-        bpmCandidatesElements.forEach(function (element) {
-          element.classList.remove('active');
+  onCTA: function (e) {
+    // State Analyzed
+    if (state.status == "analyzed") {
+      PopupComponent.openModalDialog(e);
+    }
+    // State call to analyse
+    if (state.status == "call-to-analyze") {
+      ext.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        var activeTab = tabs[0];
+        chrome.tabs.sendMessage(activeTab.id, { action: 'analyse-bpm' }, function (data) {
+          state.status = "analyzing";
         });
-        // Set active
-        el.classList.add('active');
-        // Update with right BPM
-        for (var i = 0; i < el.childNodes.length; i++) {
-          if (el.childNodes[i].className == "tempo") {
-            updateBPM(el.childNodes[i].innerHTML);
-          }
-        }
-      })
+      });
+    }
+    // State Analyzing
+    if (state.status == "analyzing") {
+      ext.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        var activeTab = tabs[0];
+        chrome.tabs.sendMessage(activeTab.id, { action: 'kill-analyze' }, function (data) {
+          state.status = "call-to-analyze";
+        });
+      });
+    }
+  },
+
+  // Init data
+  oninit: function (vnode) {
+    // Listenner onMessage Event (sent from contentscript.js), add selection of the good tab / window
+    ext.runtime.onMessage.addListener( function (request, sender, sendResponse) {
+      if (request.action === 'progression') {
+        vnode.state.progression = request.progression;
+        m.redraw();
+      }
+      if (request.action === 'audio-analyzed') vnode.state.showAnalyzedData(request);
     });
+
+    // Get ALL sync data extension
+    storage.get(function(data) {
+      // Select active tab to get meta data
+      ext.tabs.query({active: true, currentWindow: true}, function(tabs) {
+        var activeTab = tabs[0];
+        chrome.tabs.sendMessage(activeTab.id, { action: 'process-page' }, (params) => {
+          // Sync page data and vnode.state
+          Object.assign(vnode.state, params);
+          // Check state
+          if (vnode.state.isAnalysing) state.status = "analyzing";
+          // hasAlready a BPM
+          vnode.state.bpm = typeof(data.detectedVideos[vnode.state.youtubeId]) != 'undefined' ? data.detectedVideos[vnode.state.youtubeId] : '?';
+          // Onplay Dynamic option
+          vnode.state.onplay = data.onplay || false;
+          vnode.state.onChangeOnplay = function (e) {
+            var isChecked = this.checked;
+            vnode.state.onplay = isChecked;
+            storage.set({ onplay: isChecked }, function () {
+              console.log('done');
+            });
+          }
+          // Show analyzed data
+          vnode.state.showAnalyzedData = function (request) {
+            state.status = "analyzed";
+            vnode.state.bpm = request.bpm;
+            vnode.state.bpmCandidates = request.bpmCandidates;
+            m.redraw();
+          }
+
+          vnode.state.activeCandidate = function (tempo) {
+            if (vnode.state.bpm == tempo) {
+              return 'active';
+            }
+            return '';
+          }
+
+          // Redraw
+          m.redraw();
+        });
+      });
+    });
+  },
+
+  view: function (vnode) {
+    return [
+      m('header', [
+        m('img.popup--icon', {src: "icons/icon-38.png"}),
+        m('div.switch--container.float.right', [
+          m('input#onplay.switch[type="checkbox"]', {style: "float:right;", checked: isCheckboxChecked(this.onplay), onclick: this.onChangeOnplay}),
+          m('label', {style: "float:right;", for: "onplay"}),
+          m('span.label', {style:"float:right;"}, 'Auto detect')
+        ]),
+        m('div.clearfix')
+      ]),
+      m('div.popup--content', [
+        this.hasAudio ? [
+          m('div.display--head grid', [
+            m('div.unit.half.video--detected', 'Vidéo détecté'),
+            m('div.unit.half.align-right.video--origin.text-grey-green', this.origin)
+          ]),
+          m('div.display--body.grid.no-float', [
+            m('div.unit half', [
+              m('img[width="117px"][height="88px"][alt="cover"]', {src: "https://i.ytimg.com/vi/" + this.youtubeId + "/default.jpg"})
+            ]),
+            m('div.unit.half.video--details', [
+              m('h3', this.title),
+              m('p', this.duration),
+              m('p', [
+                m('strong', 'BPM '),
+                m('span', this.bpm)
+              ])
+            ])
+          ]),
+          m('div.popup--cta.text-center', {class: 'state-' + state.status, onclick: this.onCTA}, [
+            m('a.btn', [
+              m('span.call-to-analyze', 'ANALYSER BPM'),
+              m('span.analyzing', [
+                m('span', 'ANALYSE...'),
+                m('br'),
+                m('span#progression-text', this.progression + ' %'),
+                m('span.progression-bar#progression-bar', {style: 'width:' + this.progression + ' %'})
+              ]),
+              m('span.analyzed#analyzed', [
+                m('span', 'RÉSULTAT'),
+                m('br'),
+                m('span.bpm', this.bpm)
+              ])
+            ])
+          ])
+        ] : m('p.popup--welcome-text.text-center.text-light-blue', [
+          m('span', 'Bienvenue sur Allegro,'),
+          m('br'),
+          m('br'),
+          m('span', 'Profitez des fonctionnalités en jouant'),
+          m('br'),
+          m('span', 'une vidéo sur '),
+          m('a.text-light-blue[href="https://www.youtube.com"][target="_blank"]', 'Youtube !')
+        ])
+      ]),
+      m('footer', [
+        m('ul', [
+          m('li', [
+            m('a.js-options', {href: "#list", onclick: this.openLink}, [
+              m('img[src="images/icon-list.png"][alt="icon-list"]'),
+              m('span', 'Liste des BPM detecté')
+            ]),
+          ]),
+          m('li', [
+            m('a.js-options', {href: "#options", onclick: this.openLink}, [
+              m('img[src="images/icon-cog.png"][alt="icon-cog"]'),
+              m('span', 'Paramètres')
+            ])
+          ])
+        ])
+      ]),
+      m('div.modal.bpm-candidates', {style: 'display: ' + (state.modalOpen ? 'block' : 'none')}, [
+        m('div.close', {onclick: this.closeModalDialog}, '×'),
+        m('h4', 'BPM Potentiel'),
+        m('p', 'Modifiez le BPM en choisissant un autre candidat !'),
+        m('div#bpm-candidates', m('ul', vnode.state.bpmCandidates && vnode.state.bpmCandidates.map(function (candidate, index) {
+          return m('li', {class: vnode.state.activeCandidate(candidate.tempo), onclick: () => {
+            vnode.state.bpm = candidate.tempo;
+          }}, [
+            m('span.head', index + 1),
+            m('span.count', candidate.count + 'x'),
+            m('span.tempo', candidate.tempo)
+          ])
+        }))),
+        m('p.text-center', [
+          m('a.btn.btn-default#submit-bpm-update', {onclick: this.closeModalDialog}, 'Valider changement')
+        ])
+      ])
+    ];
   }
-});
-
-/**
- * Listen onMessage Event (sent from contentscript.js)
- */
-ext.runtime.onMessage.addListener( function (request, sender, sendResponse) {
-  if (request.action === 'progression') {
-    updateProgression(request.progression);
-  }
-  if (request.action === 'audio-analyzed') {
-    updateStateToAnalyzed(request);
-  }
-});
-
-
-
-////////////////////
-//////////////////// DOM Templating / Injection
-////////////////////
-var templateVideoDetected = (data) => {
-  return (`
-    <div class="display--head grid">
-      <div class="unit half video--detected">Vidéo détecté</div>
-      <div class="unit half align-right video--origin text-grey-green">${data.origin}</div>
-    </div>
-    <div class="display--body grid no-float">
-      <div class="unit half">
-        <img src="https://i.ytimg.com/vi/${data.youtubeId}/default.jpg" width="117px" height="88px" alt="cover"/>
-      </div>
-      <div class="unit half video--details">
-        <h3>${data.title}</h3>
-        <p>${data.duration}</p>
-        <p><strong>BPM </strong>${data.bpm}</p>
-      </div>
-    </div>
-  `);
 }
 
-
-
-/**
- * Get ALL sync extension data
- */
-storage.get(function(data) {
-  var renderContent = (params) => {
-    var displayContainer = document.getElementById("display--detected")
-
-    if (params.hasAudio) {
-      var welcomeContainer = document.getElementById("display--welcome")
-      welcomeContainer.style.display = "none";
-      displayContainer.style.display = "block";
-      buttonContainer.style.display = "block";
-    }
-
-    if (params.isAnalysing) {
-      updateButtonStateTo("analyzing");
-    }
-
-    params.bpm = typeof(data.detectedVideos[params.youtubeId]) != 'undefined' ? data.detectedVideos[params.youtubeId] : '?';
-    var tmpl = templateVideoDetected(params);
-    displayContainer.innerHTML = tmpl;
-  }
-
-  /**
-   * Send page data on popin Loading !
-   */
-  ext.tabs.query({active: true, currentWindow: true}, function(tabs) {
-    var activeTab = tabs[0];
-    chrome.tabs.sendMessage(activeTab.id, { action: 'process-page' }, renderContent);
-  });
-
-  /**
-   * Sync DOM Elements
-   */
-  var onPlaySwitch = document.getElementById('onplay');
-  onPlaySwitch.checked = data.onplay;
-  onPlaySwitch.addEventListener('change', function (e) {
-    var isChecked = this.checked;
-    storage.set({ onplay: isChecked }, function () {
-      console.log('done');
-    });
-  });
-});
+// Mount component on DOM
+m.mount(document.getElementById('root'), PopupComponent);

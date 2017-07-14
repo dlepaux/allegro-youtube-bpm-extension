@@ -5,51 +5,7 @@
     <link href="styles/popup.css" rel="stylesheet">
   </head>
   <body>
-    <header>
-      <img class="popup--icon" src="icons/icon-38.png" />
-      <div class="switch--container float right">
-        <input style="float:right;" type="checkbox" id="onplay" class="switch" /><label style="float:right;" for="onplay"></label>
-        <span style="float:right;" class="label">Auto detect</span>
-      </div>
-      <div vlass="clearfix"></div>
-    </header>
-
-    <!-- Default message -->
-    <div class="popup--content popup--padding-3" id="display--welcome">
-      <p class="popup--welcome-text text-center text-light-blue">
-        Bienvenue sur Allegro,<br>
-        <br>
-        Profitez des fonctionnalités en jouant<br>une vidéo sur <a href="https://www.youtube.com" target="_blank" class="text-light-blue">Youtube</a> !
-      </p>
-    </div>
-
-    <div class="popup--content" id="display--detected" style="display: none"></div>
-
-    <div class="popup--content popup--padding-1 popup--cta text-center state-call-to-analyze" id="display--buttons" style="display: none">
-      <a class="btn" id="call-to-action-btns">
-        <span class="call-to-analyze" id="call-to-analyze">ANALYSER BPM</span>
-        <span class="analyzing" id="analyzing">ANALYSE...<br><span id="progression-text"></span><span class="progression-bar" id="progression-bar"></span></span>
-        <span class="analyzed" id="analyzed">RÉSULTAT<br><span class="bpm" id="bpm"></span></span>
-      </a>
-    </div>
-
-    <footer>
-      <ul>
-        <li><a href="#list" class="js-options"><img src="images/icon-list.png" alt="icon-list"/> Liste des BPM detecté</a></li>
-        <li><a href="#options" class="js-options"><img src="images/icon-cog.png" alt="icon-cog"/> Paramètres</a></li>
-      </ul>
-    </footer>
-
-    <div class="bpm-candidates">
-      <div class="close">×</div>
-      <h4>BPM Potentiel</h4>
-      <p>Modifiez le BPM en choisissant un autre candidat !</p>
-      <div id="bpm-candidates"></div>
-      <p class="text-center">
-        <a class="btn btn-default" id="submit-bpm-update">Valider changement</a>
-      </p>
-    </div>
-
+    <div id="root"></div>
     <script src="scripts/popup.js"></script>
   </body>
 </html>
