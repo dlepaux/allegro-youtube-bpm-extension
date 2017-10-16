@@ -34,9 +34,6 @@ var PopupComponent = {
     ext.tabs.create({'url': ext.extension.getURL('options.html') + e.currentTarget.getAttribute('href')});
   },
 
-
-
-
   onCTA: function (e) {
     // State Analyzed
     if (state.status == "analyzed") {

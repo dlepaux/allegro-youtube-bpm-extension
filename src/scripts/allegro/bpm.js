@@ -95,6 +95,8 @@ function findPeaks(data) {
       peaks = findPeaksAtThreshold(data, threshold);
       threshold -= 0.05;
     }
+    console.log("threshold");
+    console.log(threshold);
 
     /**
      * Too fiew samples are unreliable
@@ -146,7 +148,8 @@ function findPeaksAtThreshold(data, threshold) {
 
 function identifyIntervals(peaks) {
   const intervals = [];
-
+  console.log('peaks');
+  console.log(peaks);
   peaks.forEach((peak, index) => {
     for (let i = 0; i < 10; i+= 1) {
       let interval = peaks[index + i] - peak;
@@ -160,7 +163,8 @@ function identifyIntervals(peaks) {
           return intervalCount.count += 1;
         }
       });
-
+      //console.log('foundInterval');
+      //console.log(foundInterval);
       /**
        * Add the interval to the collection if it's unique
        */
@@ -173,7 +177,8 @@ function identifyIntervals(peaks) {
       }
     }
   });
-
+  console.log('intervals');
+  console.log(intervals);
   return intervals;
 }
 
@@ -184,7 +189,8 @@ function identifyIntervals(peaks) {
  */
 
 function groupByTempo(sampleRate) {
-
+  console.log('sampleRate');
+  console.log(sampleRate);
   /**
    * Figure out best possible tempo candidates
    * @param  {Array} intervalCounts List of identified intervals
@@ -201,7 +207,7 @@ function groupByTempo(sampleRate) {
          */
 
         let theoreticalTempo = (60 / (intervalCount.interval / sampleRate));
-
+        console.log(theoreticalTempo);
         /**
          * Adjust the tempo to fit within the 90-180 BPM range
          */

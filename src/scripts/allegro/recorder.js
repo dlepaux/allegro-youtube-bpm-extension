@@ -86,6 +86,9 @@ class Recorder {
         that.progressionPC = that.progressionPC >= 100 ? 100 : (100 * that.timeSpent / that.options.element.duration).toFixed(2);
         chrome.runtime.sendMessage({action: 'progression', progression: that.progressionPC});
 
+        //console.log('e.inputBuffer.getChannelData(0).length');
+        //console.log(e.inputBuffer.getChannelData(0).length);
+
         // Get/Concat AudioBuffer
         if (that.audioBuffer == null) {
           that.audioBuffer = e.inputBuffer;

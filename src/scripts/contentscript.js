@@ -6,7 +6,7 @@ import allegro from "./allegro/allegro";
 import j2c from "j2c";
 import style from "./allegro/style";
 import Recorder from "./allegro/recorder";
-import URL from "./allegro/url";
+//import URL from "./allegro/url";
 
 // Init Project Config in Global
 global.allegro = {
@@ -20,6 +20,25 @@ global.allegro = {
 global.allegro.sheet = global.allegro.j2c.sheet(style.css);
 
 var HTMLElement = allegro.getAudioElement();
+console.log(HTMLElement.currentSrc);
+/*
+var blob = new Blob(["Hello, world!"], { type: 'text/plain' });
+var blobUrl = URL.createObjectURL(blob);
+
+var xhr = new XMLHttpRequest;
+xhr.responseType = 'blob';
+
+xhr.onload = function() {
+   var recoveredBlob = xhr.response;
+
+   console.log(recoveredBlob)
+
+};
+
+xhr.open('GET', HTMLElement.currentSrc);
+//xhr.send();*/
+
+/*
 var recorder = null;
 
 // Display recorded sound
@@ -89,10 +108,10 @@ if (global.allegro.env == 'development') {
     }
   };
 
-  /* AutoPlay
-  var wait = setTimeout( function () {
-    HTMLElement.play();
-  }, 300);*/
+  // AutoPlay
+  //var wait = setTimeout( function () {
+  //  HTMLElement.play();
+  //}, 300);
 }
 ////////////////////////
 // END
@@ -156,3 +175,4 @@ ext.runtime.onMessage.addListener( function (request, sender, sendResponse) {
   }
 });
 
+*/
