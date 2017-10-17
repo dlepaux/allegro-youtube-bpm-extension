@@ -1,5 +1,6 @@
 import ext from "./utils/ext";
-import storage from "./utils/storage";
+import Storage from "./utils/storage";
+const storage = Storage();
 import allegro from "./allegro/allegro";
 import m from "mithril";
 

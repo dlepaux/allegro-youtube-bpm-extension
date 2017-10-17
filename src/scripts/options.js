@@ -1,5 +1,6 @@
 import ext from "./utils/ext";
-import storage from "./utils/storage";
+import Storage from "./utils/storage";
+const storage = Storage();
 import m from "mithril";
 
 Object.size = function(obj) {

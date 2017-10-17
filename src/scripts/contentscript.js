@@ -1,5 +1,6 @@
 import ext from "./utils/ext";
-import storage from "./utils/storage";
+import Storage from "./utils/storage";
+const storage = Storage();
 
 import Display from "./allegro/display";
 import allegro from "./allegro/allegro";
@@ -9,6 +10,8 @@ import Recorder from "./allegro/recorder";
 
 
 storage.initExtension(() => {
+  if (document.location.href.indexOf('youtube.com') != -1) return;
+
   // Init Project Config in Global
   global.allegro = {
     env: document.location.href.indexOf('youtube.com') == -1 ? 'development' : 'production',
@@ -26,8 +29,8 @@ storage.initExtension(() => {
   var recorder = null;
 
   // Display recorded sound
-  storage.getDataStored((data) => {
-    var display = new Display(data);
+  storage.get((data) => {
+    var display = new Display(data.detectedVideos);
     display.addBPMinTitles();
     global.allegro.display = display;
 
@@ -48,8 +51,8 @@ storage.initExtension(() => {
     }, false);
     document.addEventListener("spfdone", function () {
       global.allegro.audioContext.resume();
-      storage.getDataStored((data) => {
-        global.allegro.display.update(data);
+      storage.get((data) => {
+        global.allegro.display.update(data.detectedVideos);
       });
       console.log('spf done');
       //that.init();
@@ -63,8 +66,7 @@ storage.initExtension(() => {
   if (global.allegro.env == 'development') {
     document.getElementById('set-test-data').addEventListener('click', function (e) {
       e.preventDefault();
-      console.log('set Data Test');
-      storage.storeResultInStorage('c3c3c3', 125);
+      storage.pair.add('c3c3c3', 125, () => console.log('done'));
     }, true);
     document.getElementById('extension-analyse').addEventListener('click', function (e) {
       e.preventDefault();
@@ -156,7 +158,9 @@ ext.runtime.onMessage.addListener( function (request, sender, sendResponse) {
     recorder.clear();
   }
   if (request.action === 'update-bpm') {
-    storage.storeResultInStorage(request.v, request.bpm);
+    storage.pair.add(request.v, request.bpm, () => {
+      console.log('done');
+    });
   }
 });
 

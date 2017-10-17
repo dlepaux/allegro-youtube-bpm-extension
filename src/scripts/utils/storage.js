@@ -124,13 +124,15 @@ storageCustom.pair = {};
  * @param {[type]}   pair [description]
  * @param {Function} done [description]
  */
-storageCustom.pair.add = function (year, week, pair, done) {
-  YearWeekPairDoneResolver(year, week, pair, done, function (year, week, pair, done) {
+storageCustom.pair.add = function (year, week, key, value, done) {
+  YearWeekPairDoneResolver(year, week, key, value, done, function (year, week, key, value, done) {
 
     const keyYearWeek = [year, week].join('-');
+    const pair = {};
+    pair[key] = value;
 
     storageCustom.get(function (data) {
-      const startInterval = (allData) => {
+      const addPair = (allData) => {
         allData[keyYearWeek] = Object.assign(allData[keyYearWeek], pair);
         return allData;
       };
@@ -138,12 +140,11 @@ storageCustom.pair.add = function (year, week, pair, done) {
       if (typeof(data[keyYearWeek]) == 'undefined') {
         storageCustom.week.add(year, week, function () {
           storageCustom.updateData((data) => {
-            return startInterval(data);
+            return addPair(data);
           }, done);
         });
       } else {
-        data.config.state = 'work';
-        storageCustom.set(startInterval(data), () => done());
+        storageCustom.set(addPair(data), () => done());
       }
     });
   });

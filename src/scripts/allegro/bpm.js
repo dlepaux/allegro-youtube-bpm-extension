@@ -25,22 +25,23 @@ function getPeaks(buffer, callback) {
    * Top starting value to check peaks
    */
 
-  let thresold = 0.9;
+  let thresold = 0.95;
 
   /**
    * Minimum value to check peaks
    */
 
-  const minThresold = 0.3;
+  const minThresold = 0.30;
+
+  console.log('source.buffer.getChannelData(0)', source.buffer.getChannelData(0));
 
   /**
    * Keep looking for peaks lowering the thresold
    */
-
-  while (thresold >= minThresold) {
+  do {
+    thresold = (thresold - 0.05).toFixed(2);
     peaks[thresold.toString()] = findPeaksAtThresold(source.buffer.getChannelData(0), thresold);
-    thresold -= 0.05;
-  }
+  } while (thresold > minThresold)
 
   /**
    * Resolve data
@@ -56,7 +57,8 @@ function getPeaks(buffer, callback) {
  * @param  {Function} callback [description]
  * @return {[type]}            [description]
  */
-function computeBPM (data, callback) {
+function computeBPM (data, sampleRate, callback) {
+  console.log('computeBPM');
   /**
    * Minimum peaks
    */
@@ -68,22 +70,43 @@ function computeBPM (data, callback) {
   let peaksFound = false;
 
   /**
-   *
+   * Top starting value to check peaks
    */
-  Object.keys(data).forEach(function(thresold) {
-    console.log('thresold',thresold);
-    if (data[thresold].length > minPeaks && ! peaksFound) {
-      peaksFound = true;
+
+  let thresold = 0.95;
+
+  /**
+   * Minimum value to check peaks
+   */
+
+  const minThresold = 0.30;
+
+
+
+  /**
+   * Keep looking for peaks lowering the thresold
+   */
+  do {
+    thresold = (thresold - 0.05).toFixed(2);
+
+    if (data[thresold].length > minPeaks) {
+
+      // Peaks serie found !
+      console.log('Peaks serie found !');
+      console.log('thresold', thresold);
+      console.log('data', data);
+      return callback(data);
+      /*peaksFound = true;
       callback(null, [
         identifyIntervals,
-        groupByTempo(buffer.sampleRate),
+        groupByTempo(sampleRate),
         getTopCandidates
       ].reduce(
        (state, fn) => fn(state),
         data[thresold]
-      ));
+      ));*/
     }
-  });
+  } while (thresold > minThresold && ! peaksFound);
 
   if ( ! peaksFound) callback(new Error('Could not find enough samples for a reliable detection.'))
 };
@@ -145,21 +168,18 @@ function getLowPassSource(buffer) {
 
 function findPeaks(data) {
   let peaks = [];
-  let thresold = 0.9;
-  const minThresold = 0.3;
+  let thresold = 0.95;
+  const minThresold = 0.30;
   const minPeaks = 15;
 
   /**
    * Keep looking for peaks lowering the thresold until
    * we have at least 15 peaks (10 seconds @ 90bpm)
    */
-
-  while (peaks.length < minPeaks && thresold >= minThresold) {
+  do {
+    thresold = (thresold - 0.05).toFixed(2);
     peaks = findPeaksAtThresold(data, thresold);
-    thresold -= 0.05;
-  }
-  console.log("thresold");
-  console.log(thresold);
+  } while (peaks.length < minPeaks && thresold > minThresold);
 
   /**
    * Too fiew samples are unreliable
@@ -211,8 +231,6 @@ function findPeaksAtThresold(data, thresold) {
 
 function identifyIntervals(peaks) {
   const intervals = [];
-  console.log('peaks');
-  console.log(peaks);
   peaks.forEach((peak, index) => {
     for (let i = 0; i < 10; i+= 1) {
       let interval = peaks[index + i] - peak;
@@ -240,8 +258,6 @@ function identifyIntervals(peaks) {
       }
     }
   });
-  console.log('intervals');
-  console.log(intervals);
   return intervals;
 }
 
@@ -252,8 +268,6 @@ function identifyIntervals(peaks) {
  */
 
 function groupByTempo(sampleRate) {
-  console.log('sampleRate');
-  console.log(sampleRate);
   /**
    * Figure out best possible tempo candidates
    * @param  {Array} intervalCounts List of identified intervals
@@ -312,5 +326,6 @@ function groupByTempo(sampleRate) {
 }
 
 module.exports = {
+  computeBPM: computeBPM,
   getPeaks: getPeaks
 };

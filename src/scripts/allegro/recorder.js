@@ -1,7 +1,7 @@
 'use strict';
 
-import ext from "./../utils/ext";
-import storage from "./../utils/storage";
+import Storage from "./../utils/storage";
+const storage = Storage();
 import buffer from "./../utils/buffer";
 import BPM from "./bpm";
 import URL from "./url";
@@ -49,6 +49,8 @@ class Recorder {
     this.source.connect(this.audioContext.destination);
     // Buffer
     this.peaksByThresolds = this.generateDataModel();
+    this.peaksIndexesByThresolds = this.generatePeakIndexModel();
+    this.peaksIndex = 1;
     this.increment = 0;
     this.audioBuffer = null;
     this.superBuffer = null;
@@ -67,6 +69,8 @@ class Recorder {
     this.scriptNode.onaudioprocess = null;
 
     this.peaksByThresolds = this.generateDataModel();
+    this.peaksIndexesByThresolds = this.generatePeakIndexModel();
+    this.peaksIndex = 1;
     this.increment = 0;
     this.audioBuffer = null;
     this.superBuffer = null;
@@ -79,14 +83,27 @@ class Recorder {
   }
 
   generateDataModel () {
-    const minThresold = 0.3;
-    let thresold = 0.9;
+    const minThresold = 0.30;
+    let thresold = 0.95;
     let object = {};
 
-    while (thresold >= minThresold) {
-      object[thresold] = [];
-      thresold -= 0.05;
-    }
+    do {
+      thresold = (thresold - 0.05).toFixed(2);
+      object[thresold.toString()] = [];
+    } while (thresold > minThresold);
+
+    return object;
+  }
+
+  generatePeakIndexModel () {
+    const minThresold = 0.30;
+    let thresold = 0.95;
+    let object = {};
+
+    do {
+      thresold = (thresold - 0.05).toFixed(2);
+      object[thresold.toString()] = 0;
+    } while (thresold > minThresold);
 
     return object;
   }
@@ -102,23 +119,52 @@ class Recorder {
         that.progressionPC = that.progressionPC >= 100 ? 100 : (100 * that.timeSpent / that.options.element.duration).toFixed(2);
         chrome.runtime.sendMessage({action: 'progression', progression: that.progressionPC});
 
+
         // Resolve peaks compting
         BPM.getPeaks(e.inputBuffer, function (peaksByThreshold) {
           console.log('peaksByThreshold', peaksByThreshold);
           Object.keys(peaksByThreshold).forEach(function(key) {
-            this.peaksByThresolds[key].push(peaksByThreshold[key]);
+            // Save peak index by thresold
+            that.peaksByThresolds[key].push(peaksByThreshold[key][0]);
+
+            // If value is different from 0 mean that we have an index ! weee
+            if (peaksByThreshold[key] != 0) {
+              // Add index value to the thresold index
+              that.peaksIndexesByThresolds[key] += peaksByThreshold[key][0];
+
+
+
+
+
+
+            }
+
+            const maxCurrentIndex = 4096 * that.peaksIndex;
+            that.peaksIndex++;
+            const minCurrentIndex = maxCurrentIndex - 4096;
+
+            if (that.peaksIndexesByThresolds[key] > minCurrentIndex && that.peaksIndexesByThresolds[key] < maxCurrentIndex) {
+              that.peaksByThresolds[key].push(peaksByThreshold[key][0]);
+            }
+
+            if (peaksByThreshold[key] != 0) {
+              that.peaksIndexesByThresolds[key] += 10000;
+            }
           });
         });
 
         // Refresh BPM every 1/4s
         if (wait === null) {
-          setTimeout( function () {
-            BPM.computeBPM(that.peaksByThresolds, function (err, bpm) {
+          wait = setTimeout( function () {
+            console.log('peaksIndexesByThresolds', that.peaksIndexesByThresolds);
+            console.log('that.peaksByThresolds', that.peaksByThresolds);
+            wait = null;
+            BPM.computeBPM(that.peaksByThresolds, e.inputBuffer.sampleRate, function (err, bpm) {
               console.log('err', err);
-              chrome.runtime.sendMessage({action: 'updateBPM', bpm: bpm});
-              wait = null;
+              console.log('bpm', bpm);
+              //chrome.runtime.sendMessage({action: 'updateBPM', bpm: bpm});
             });
-          }, 250);
+          }, 2000);
         }
       }
     }
@@ -144,9 +190,8 @@ class Recorder {
 
     // Listener
     storage.get(function(data) {
-      console.log(data);
       // On Play if necessary
-      if (data.onplay) {
+      if (data.config.onplay) {
         console.log('onplay event setted');
         that.options.element.onplay = (e) => {
           console.log('onplay fired');
@@ -194,7 +239,9 @@ class Recorder {
         // Get param v value
         var params = URL.getQueryParams(document.location.search);
         if (typeof(params.v) != 'undefined') {
-          storage.storeResultInStorage(params.v, bpm);
+          storage.pair.add(params.v, bpm, () => {
+            console.log('youpi');
+          });
           chrome.runtime.sendMessage({action: 'audio-analyzed', v: params.v, bpm: bpm, bpmCandidates: bpmCandidates});
           console.log(bpm);
         } else {
