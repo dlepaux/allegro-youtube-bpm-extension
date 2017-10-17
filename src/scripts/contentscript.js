@@ -38,7 +38,7 @@ xhr.onload = function() {
 xhr.open('GET', HTMLElement.currentSrc);
 //xhr.send();*/
 
-/*
+
 var recorder = null;
 
 // Display recorded sound
@@ -175,4 +175,3 @@ ext.runtime.onMessage.addListener( function (request, sender, sendResponse) {
   }
 });
 
-*/

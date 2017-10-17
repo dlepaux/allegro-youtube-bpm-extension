@@ -48,6 +48,7 @@ class Recorder {
     this.source.connect(this.scriptNode);
     this.source.connect(this.audioContext.destination);
     // Buffer
+    this.peaksByThresolds = this.generateDataModel();
     this.increment = 0;
     this.audioBuffer = null;
     this.superBuffer = null;
@@ -65,6 +66,7 @@ class Recorder {
     //this.scriptNode.disconnect(0);
     this.scriptNode.onaudioprocess = null;
 
+    this.peaksByThresolds = this.generateDataModel();
     this.increment = 0;
     this.audioBuffer = null;
     this.superBuffer = null;
@@ -76,9 +78,23 @@ class Recorder {
     this.isAnalysing = false;
   }
 
+  generateDataModel () {
+    const minThresold = 0.3;
+    let thresold = 0.9;
+    let object = {};
+
+    while (thresold >= minThresold) {
+      object[thresold] = [];
+      thresold -= 0.05;
+    }
+
+    return object;
+  }
+
   listenAudioProcess () {
     console.log('listenAudioProcess' + this.options.element.duration);
     var that = this;
+    var wait = null;
     this.scriptNode.onaudioprocess = function (e) {
       if (that.isAnalysing) {
         // Send calculated progression to popup
@@ -86,19 +102,23 @@ class Recorder {
         that.progressionPC = that.progressionPC >= 100 ? 100 : (100 * that.timeSpent / that.options.element.duration).toFixed(2);
         chrome.runtime.sendMessage({action: 'progression', progression: that.progressionPC});
 
-        //console.log('e.inputBuffer.getChannelData(0).length');
-        //console.log(e.inputBuffer.getChannelData(0).length);
+        // Resolve peaks compting
+        BPM.getPeaks(e.inputBuffer, function (peaksByThreshold) {
+          console.log('peaksByThreshold', peaksByThreshold);
+          Object.keys(peaksByThreshold).forEach(function(key) {
+            this.peaksByThresolds[key].push(peaksByThreshold[key]);
+          });
+        });
 
-        // Get/Concat AudioBuffer
-        if (that.audioBuffer == null) {
-          that.audioBuffer = e.inputBuffer;
-        } else {
-          that.audioBuffer = buffer.concatenateAudioBuffers(that.audioBuffer, e.inputBuffer);
-        }
-        if (that.audioBuffer.duration > 10) {
-          that.arrayBuffer.push(that.audioBuffer);
-          that.increment++;
-          that.audioBuffer = null;
+        // Refresh BPM every 1/4s
+        if (wait === null) {
+          setTimeout( function () {
+            BPM.computeBPM(that.peaksByThresolds, function (err, bpm) {
+              console.log('err', err);
+              chrome.runtime.sendMessage({action: 'updateBPM', bpm: bpm});
+              wait = null;
+            });
+          }, 250);
         }
       }
     }
