@@ -38,7 +38,7 @@ function getPeaks(buffer, callback) {
    */
 
   while (thresold >= minThresold) {
-    peaks[thresold] = findPeaksAtThresold(source.buffer.getChannelData(0), thresold);
+    peaks[thresold.toString()] = findPeaksAtThresold(source.buffer.getChannelData(0), thresold);
     thresold -= 0.05;
   }
 
@@ -57,9 +57,19 @@ function getPeaks(buffer, callback) {
  * @return {[type]}            [description]
  */
 function computeBPM (data, callback) {
+  /**
+   * Minimum peaks
+   */
   const minPeaks = 15;
+
+  /**
+   * Flag to fix Object.keys looping
+   */
   let peaksFound = false;
 
+  /**
+   *
+   */
   Object.keys(data).forEach(function(thresold) {
     console.log('thresold',thresold);
     if (data[thresold].length > minPeaks && ! peaksFound) {

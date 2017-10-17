@@ -6,116 +6,101 @@ import allegro from "./allegro/allegro";
 import j2c from "j2c";
 import style from "./allegro/style";
 import Recorder from "./allegro/recorder";
-//import URL from "./allegro/url";
-
-// Init Project Config in Global
-global.allegro = {
-  env: document.location.href.indexOf('youtube.com') == -1 ? 'development' : 'production',
-  // Init j2c instance
-  j2c: j2c(),
-  // Init AudioContext
-  audioContext: new (window.AudioContext || window.webkitAudioContext)()
-};
-// Get and init style
-global.allegro.sheet = global.allegro.j2c.sheet(style.css);
-
-var HTMLElement = allegro.getAudioElement();
-console.log(HTMLElement.currentSrc);
-/*
-var blob = new Blob(["Hello, world!"], { type: 'text/plain' });
-var blobUrl = URL.createObjectURL(blob);
-
-var xhr = new XMLHttpRequest;
-xhr.responseType = 'blob';
-
-xhr.onload = function() {
-   var recoveredBlob = xhr.response;
-
-   console.log(recoveredBlob)
-
-};
-
-xhr.open('GET', HTMLElement.currentSrc);
-//xhr.send();*/
 
 
-var recorder = null;
+storage.initExtension(() => {
+  // Init Project Config in Global
+  global.allegro = {
+    env: document.location.href.indexOf('youtube.com') == -1 ? 'development' : 'production',
+    // Init j2c instance
+    j2c: j2c(),
+    // Init AudioContext
+    audioContext: new (window.AudioContext || window.webkitAudioContext)()
+  };
+  // Get and init style
+  global.allegro.sheet = global.allegro.j2c.sheet(style.css);
 
-// Display recorded sound
-storage.getDataStored((data) => {
-  var display = new Display(data);
-  display.addBPMinTitles();
-  global.allegro.display = display;
 
-  // Try to catch a HTMLElement
+  var HTMLElement = allegro.getAudioElement();
 
-  // Recorder
-  if (HTMLElement) {
-    // Set recorder listener
-    recorder = new Recorder({element: HTMLElement});
-    recorder.listen();
-  } else {
-    console.log('No audio/video node found in this page !');
-  }
+  var recorder = null;
 
-  // Youtube Special Listener
-  document.addEventListener("spfrequest", function () {
-    recorder.clear();
-    global.allegro.audioContext.suspend();
-    console.log('spf request');
-  }, false);
-  document.addEventListener("spfdone", function () {
-    global.allegro.audioContext.resume();
-    storage.getDataStored((data) => {
-      global.allegro.display.update(data);
+  // Display recorded sound
+  storage.getDataStored((data) => {
+    var display = new Display(data);
+    display.addBPMinTitles();
+    global.allegro.display = display;
+
+    // Recorder
+    if (HTMLElement) {
+      // Set recorder listener
+      recorder = new Recorder({element: HTMLElement});
+      recorder.listen();
+    } else {
+      console.log('No audio/video node found in this page !');
+    }
+
+    // Youtube Special Listener
+    document.addEventListener("spfrequest", function () {
+      recorder.clear();
+      global.allegro.audioContext.suspend();
+      console.log('spf request');
+    }, false);
+    document.addEventListener("spfdone", function () {
+      global.allegro.audioContext.resume();
+      storage.getDataStored((data) => {
+        global.allegro.display.update(data);
+      });
+      console.log('spf done');
+      //that.init();
+    }, false);
+  });
+
+
+  ////////////////////////
+  // DEVELOPMENT LISTENER
+  ////////////////////////
+  if (global.allegro.env == 'development') {
+    document.getElementById('set-test-data').addEventListener('click', function (e) {
+      e.preventDefault();
+      console.log('set Data Test');
+      storage.storeResultInStorage('c3c3c3', 125);
+    }, true);
+    document.getElementById('extension-analyse').addEventListener('click', function (e) {
+      e.preventDefault();
+      console.log('extension-analyse');
+      recorder.listen();
+      HTMLElement.play();
     });
-    console.log('spf done');
-    //that.init();
-  }, false);
+    document.getElementById('extension-pause').addEventListener('click', function (e) {
+      e.preventDefault();
+      console.log('extension-pause');
+      HTMLElement.pause();
+    });
+    document.getElementById('extension-stop').addEventListener('click', function (e) {
+      e.preventDefault();
+      console.log('extension-stop');
+      HTMLElement.currentTime = 0;
+      HTMLElement.pause();
+    });
+
+    window.onpopstate = function(e){
+      if(e.state){
+        document.title = e.state.pageTitle;
+      }
+    };
+
+    // AutoPlay
+    //var wait = setTimeout( function () {
+    //  HTMLElement.play();
+    //}, 300);
+  }
+  ////////////////////////
+  // END
+  ////////////////////////
+
 });
 
-
-////////////////////////
-// DEVELOPMENT LISTENER
-////////////////////////
-if (global.allegro.env == 'development') {
-  document.getElementById('set-test-data').addEventListener('click', function (e) {
-    e.preventDefault();
-    console.log('set Data Test');
-    storage.storeResultInStorage('c3c3c3', 125);
-  }, true);
-  document.getElementById('extension-analyse').addEventListener('click', function (e) {
-    e.preventDefault();
-    console.log('extension-analyse');
-    recorder.listen();
-    HTMLElement.play();
-  });
-  document.getElementById('extension-pause').addEventListener('click', function (e) {
-    e.preventDefault();
-    console.log('extension-pause');
-    HTMLElement.pause();
-  });
-  document.getElementById('extension-stop').addEventListener('click', function (e) {
-    e.preventDefault();
-    console.log('extension-stop');
-    HTMLElement.currentTime = 0;
-    HTMLElement.pause();
-  });
-
-  window.onpopstate = function(e){
-    if(e.state){
-      document.title = e.state.pageTitle;
-    }
-  };
-
-  // AutoPlay
-  //var wait = setTimeout( function () {
-  //  HTMLElement.play();
-  //}, 300);
-}
-////////////////////////
-// END
-////////////////////////
 
 
 var extractPageData = () => {

@@ -6,3 +6,5 @@ dist
 .DS_Store
 build
 npm-debug*
+coverage
+.nyc_output
