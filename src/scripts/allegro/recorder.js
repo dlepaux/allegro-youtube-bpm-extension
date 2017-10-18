@@ -39,6 +39,25 @@ class Recorder {
     }*/
   }
 
+  initClass () {
+    this.chunks = {
+      stream: []
+    };
+    this.validPeaks = this.generateDataModel();
+    this.nextIndexPeaks = this.generatePeakIndexModel();
+    this.chunkIndex = 1;
+
+    this.increment = 0;
+    this.audioBuffer = null;
+    this.superBuffer = null;
+    this.arrayBuffer = [];
+
+    this.progressionPC = 0;
+    this.timeSpent = 0.0;
+
+    this.isAnalysing = false;
+  }
+
   connect () {
     console.log('connect');
     // ScriptNode
@@ -47,39 +66,15 @@ class Recorder {
     // Source connects
     this.source.connect(this.scriptNode);
     this.source.connect(this.audioContext.destination);
-    // Buffer
-    this.peaksByThresolds = this.generateDataModel();
-    this.peaksIndexesByThresolds = this.generatePeakIndexModel();
-    this.peaksIndex = 1;
-    this.increment = 0;
-    this.audioBuffer = null;
-    this.superBuffer = null;
-    this.arrayBuffer = [];
-    // Counter
-    this.progressionPC = 0;
-    this.timeSpent = 0.0;
-    // Flag
-    this.isAnalysing = false;
+
+    this.initClass();
   }
 
   clear () {
     console.log('clear');
-    //this.source.disconnect(0);
-    //this.scriptNode.disconnect(0);
     this.scriptNode.onaudioprocess = null;
 
-    this.peaksByThresolds = this.generateDataModel();
-    this.peaksIndexesByThresolds = this.generatePeakIndexModel();
-    this.peaksIndex = 1;
-    this.increment = 0;
-    this.audioBuffer = null;
-    this.superBuffer = null;
-    this.arrayBuffer = [];
-
-    this.progressionPC = 0;
-    this.timeSpent = 0.0;
-
-    this.isAnalysing = false;
+    this.initClass();
   }
 
   generateDataModel () {
@@ -109,63 +104,85 @@ class Recorder {
   }
 
   listenAudioProcess () {
-    console.log('listenAudioProcess' + this.options.element.duration);
-    var that = this;
+    console.log('listenAudioProcess');
     var wait = null;
-    this.scriptNode.onaudioprocess = function (e) {
-      if (that.isAnalysing) {
-        // Send calculated progression to popup
-        that.timeSpent += e.inputBuffer.duration;
-        that.progressionPC = that.progressionPC >= 100 ? 100 : (100 * that.timeSpent / that.options.element.duration).toFixed(2);
-        chrome.runtime.sendMessage({action: 'progression', progression: that.progressionPC});
+    this.scriptNode.onaudioprocess = (e) => {
+      if (this.isAnalysing) {
+        const currentMaxIndex = 4096 * this.chunkIndex;
+        const buffer = e.inputBuffer;
 
+        /**
+         * Compute and send progression to popup
+         */
+        this.timeSpent += buffer.duration;
+        this.progressionPC = this.progressionPC >= 100 ? 100 : (100 * this.timeSpent / this.options.element.duration).toFixed(2);
+        chrome.runtime.sendMessage({action: 'progression', progression: this.progressionPC});
 
-        // Resolve peaks compting
-        BPM.getPeaks(e.inputBuffer, function (peaksByThreshold) {
-          console.log('peaksByThreshold', peaksByThreshold);
-          Object.keys(peaksByThreshold).forEach(function(key) {
-            // Save peak index by thresold
-            that.peaksByThresolds[key].push(peaksByThreshold[key][0]);
+        /**
+         * Apply a low pass filter to the buffer, start it to time : 0, and fill it to the chunk.stream
+         */
+        console.log('buffer.getChannelData(0)', buffer.getChannelData(0));
+        const source = BPM.getLowPassSource(buffer);
+        source.start(0);
+        console.log('source.buffer.getChannelData(0)', source.buffer.getChannelData(0)[0]);
+        // this.chunks.stream = this.chunks.stream.concat(source.buffer.getChannelData(0));
 
-            // If value is different from 0 mean that we have an index ! weee
-            if (peaksByThreshold[key] != 0) {
-              // Add index value to the thresold index
-              that.peaksIndexesByThresolds[key] += peaksByThreshold[key][0];
+        /**
+         * Test if we are able to continue (for each thresold declinaisons)
+         */
+        const minThresold = 0.30;
+        let thresold = 0.95;
+        let object = {};
+        do {
+          thresold = (thresold - 0.05).toFixed(2);
+          // Get the next index in the next chunk
+          const nextChunkIndex = this.nextIndexPeaks[thresold] % 4096;
 
+          /**
+           * Check if we can find peak with respect to 10 000 indexes add in case of success
+           */
+          if (this.nextIndexPeaks[thresold] < currentMaxIndex) {
+            // Get peaks sort by tresold
 
+            BPM.findPeaksAtThresold(source.buffer.getChannelData(0), thresold, nextChunkIndex, (peaks) => {
+              // Loop over peaks
+              if (typeof(peaks) != 'undefined' && peaks != undefined) {
+                Object.keys(peaks).forEach( (key) => {
+                  console.log('peaks', peaks[key]);
+                  // If we got some data..
+                  const peak = peaks[key];
 
+                  if (typeof(peak) != 'undefined') {
+                    // Add current Index + 10K
+                    this.nextIndexPeaks[thresold] = peak - nextChunkIndex + 10000;
+                    // Store valid peak
+                    this.validPeaks[thresold].push(currentMaxIndex - 4096 + peak);
+                  }
+                });
+              } else {
+                // console.log('youmiss this bitch');
+              }
 
-
-
-            }
-
-            const maxCurrentIndex = 4096 * that.peaksIndex;
-            that.peaksIndex++;
-            const minCurrentIndex = maxCurrentIndex - 4096;
-
-            if (that.peaksIndexesByThresolds[key] > minCurrentIndex && that.peaksIndexesByThresolds[key] < maxCurrentIndex) {
-              that.peaksByThresolds[key].push(peaksByThreshold[key][0]);
-            }
-
-            if (peaksByThreshold[key] != 0) {
-              that.peaksIndexesByThresolds[key] += 10000;
-            }
-          });
-        });
+            });
+          }
+        } while (thresold > minThresold);
 
         // Refresh BPM every 1/4s
-        if (wait === null) {
-          wait = setTimeout( function () {
-            console.log('peaksIndexesByThresolds', that.peaksIndexesByThresolds);
-            console.log('that.peaksByThresolds', that.peaksByThresolds);
+        /*if (wait === null) {
+          wait = setTimeout( () => {
+            console.log('nextIndexPeaks', this.nextIndexPeaks);
+            console.log('this.validPeaks', this.validPeaks);
             wait = null;
-            BPM.computeBPM(that.peaksByThresolds, e.inputBuffer.sampleRate, function (err, bpm) {
+            BPM.computeBPM(this.validPeaks, e.inputBuffer.sampleRate, (err, bpm) => {
               console.log('err', err);
               console.log('bpm', bpm);
               //chrome.runtime.sendMessage({action: 'updateBPM', bpm: bpm});
             });
           }, 2000);
-        }
+        }*/
+
+        // Increment chunk index
+        this.chunkIndex++;
       }
     }
   }
@@ -224,9 +241,18 @@ class Recorder {
 
     // Analyse at End !
     this.options.element.onended = function (e) {
-      console.log('onended fired');
+      console.log('onended fired', that.validPeaks);
       that.isAnalysing = false;
-      var superBuffer = buffer.getSuperBuffer(that.increment, that.arrayBuffer);
+
+      BPM.computeBPM(that.validPeaks, (err, bpm) => {
+        console.log('err', err);
+        console.log('bpm', bpm);
+        that.clear();
+        //chrome.runtime.sendMessage({action: 'updateBPM', bpm: bpm});
+      });
+
+
+      /*var superBuffer = buffer.getSuperBuffer(that.increment, that.arrayBuffer);
       if (that.increment == 0) {
         console.log('increment equal zero');
         superBuffer = that.audioBuffer;
@@ -267,7 +293,7 @@ class Recorder {
         }
       } catch (e) {
         console.log(e);
-      }
+      }*/
     }
 
   }
