@@ -83,7 +83,7 @@ class Recorder {
     let object = {};
 
     do {
-      thresold = (thresold - 0.05).toFixed(2);
+      thresold = thresold - 0.05;
       object[thresold.toString()] = [];
     } while (thresold > minThresold);
 
@@ -96,7 +96,7 @@ class Recorder {
     let object = {};
 
     do {
-      thresold = (thresold - 0.05).toFixed(2);
+      thresold = thresold - 0.05;
       object[thresold.toString()] = 0;
     } while (thresold > minThresold);
 
@@ -109,6 +109,8 @@ class Recorder {
     this.scriptNode.onaudioprocess = (e) => {
       if (this.isAnalysing) {
         const currentMaxIndex = 4096 * this.chunkIndex;
+        const currentMinIndex = currentMaxIndex - 4096;
+        console.log('start', currentMaxIndex);
         const buffer = e.inputBuffer;
 
         /**
@@ -123,6 +125,7 @@ class Recorder {
          */
         console.log('buffer.getChannelData(0)', buffer.getChannelData(0));
         const source = BPM.getLowPassSource(buffer);
+        console.log('filter.frequency.value');
         source.start(0);
         console.log('source.buffer.getChannelData(0)', source.buffer.getChannelData(0)[0]);
         // this.chunks.stream = this.chunks.stream.concat(source.buffer.getChannelData(0));
@@ -134,29 +137,28 @@ class Recorder {
         let thresold = 0.95;
         let object = {};
         do {
-          thresold = (thresold - 0.05).toFixed(2);
-          // Get the next index in the next chunk
-          const nextChunkIndex = this.nextIndexPeaks[thresold] % 4096;
+          thresold = thresold - 0.05;
 
           /**
            * Check if we can find peak with respect to 10 000 indexes add in case of success
            */
           if (this.nextIndexPeaks[thresold] < currentMaxIndex) {
+            // Get the next index in the next chunk
+            const offsetForNextPeak = this.nextIndexPeaks[thresold] % 4096; // 0 - 4095
             // Get peaks sort by tresold
-
-            BPM.findPeaksAtThresold(source.buffer.getChannelData(0), thresold, nextChunkIndex, (peaks) => {
+            BPM.findPeaksAtThresold(source.buffer.getChannelData(0), thresold, offsetForNextPeak, (peaks) => {
               // Loop over peaks
               if (typeof(peaks) != 'undefined' && peaks != undefined) {
                 Object.keys(peaks).forEach( (key) => {
                   console.log('peaks', peaks[key]);
                   // If we got some data..
-                  const peak = peaks[key];
+                  const relativeChunkPeak = peaks[key];
 
-                  if (typeof(peak) != 'undefined') {
+                  if (typeof(relativeChunkPeak) != 'undefined') {
                     // Add current Index + 10K
-                    this.nextIndexPeaks[thresold] = peak - nextChunkIndex + 10000;
-                    // Store valid peak
-                    this.validPeaks[thresold].push(currentMaxIndex - 4096 + peak);
+                    this.nextIndexPeaks[thresold] = currentMinIndex + relativeChunkPeak + 10000;
+                    // Store valid relativeChunkPeak
+                    this.validPeaks[thresold].push(currentMinIndex + relativeChunkPeak);
                   }
                 });
               } else {
@@ -183,6 +185,7 @@ class Recorder {
 
         // Increment chunk index
         this.chunkIndex++;
+        console.log('stop', this.chunkIndex);
       }
     }
   }

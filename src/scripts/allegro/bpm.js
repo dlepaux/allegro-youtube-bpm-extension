@@ -24,6 +24,7 @@ function getLowPassSource(buffer) {
 
   const filter = context.createBiquadFilter();
   filter.type = 'lowpass';
+  filter.frequency.value = 100; // instead of break frequency 70% of max amplitude
 
   /**
    * Pipe the song into the filter, and the filter into the offline context
@@ -91,7 +92,7 @@ function computeBPM (data, callback) {
    * Keep looking for peaks lowering the thresold
    */
   do {
-    thresold = (thresold - 0.05).toFixed(2);
+    thresold = thresold - 0.05;
 
     if (data[thresold].length > minPeaks) {
 
@@ -109,7 +110,7 @@ function computeBPM (data, callback) {
       console.log('identifyIntervals(data[thresold])', intervals);
       let tempos = groupByTempo(48000);
       console.log('tempos', tempos);
-      //console.log('getTopCandidates(groupByTempo(identifyIntervals(data[thresold])))', getTopCandidates(tempos(intervals)));
+      console.log('getTopCandidates(groupByTempo(identifyIntervals(data[thresold])))', getTopCandidates(tempos(intervals)));
 
       return callback(thresold, data[thresold]);
 
@@ -204,7 +205,11 @@ function findPeaksAtThresold(data, thresold, offset = 0, callback) {
     }
   }
 
+  if (peaks.length > 1) {
+    console.log('WOWOWOWOWOooooooooooooooooooooooooooooooooooooo');
+  }
   peaks = peaks.length == 0 ? undefined :peaks;
+
 
   return callback && callback(peaks) || peaks;
 }
