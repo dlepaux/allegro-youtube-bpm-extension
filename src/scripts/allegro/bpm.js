@@ -96,24 +96,6 @@ function computeBPM (data, callback) {
 
     if (data[thresold].length > minPeaks) {
 
-      // Peaks serie found !
-      console.log('Peaks serie found !');
-      console.log('thresold', thresold);
-      console.log('data', data);
-      console.log('data', data[thresold]);
-      //return callback(data);
-      //
-      //
-      //
-      //
-      let intervals = identifyIntervals(data[thresold]);
-      console.log('identifyIntervals(data[thresold])', intervals);
-      let tempos = groupByTempo(48000);
-      console.log('tempos', tempos);
-      console.log('getTopCandidates(groupByTempo(identifyIntervals(data[thresold])))', getTopCandidates(tempos(intervals)));
-
-      return callback(thresold, data[thresold]);
-
       peaksFound = true;
       return callback(null, [
         identifyIntervals,
@@ -205,11 +187,7 @@ function findPeaksAtThresold(data, thresold, offset = 0, callback) {
     }
   }
 
-  if (peaks.length > 1) {
-    console.log('WOWOWOWOWOooooooooooooooooooooooooooooooooooooo');
-  }
   peaks = peaks.length == 0 ? undefined :peaks;
-
 
   return callback && callback(peaks) || peaks;
 }

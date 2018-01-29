@@ -298,7 +298,6 @@ class Recorder {
         console.log(e);
       }*/
     }
-
   }
 }
 
